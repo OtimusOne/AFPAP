@@ -1,0 +1,53 @@
+<!--
+parent_id: structure_analysis
+parent_name: 'Structure Analysis'
+parent_description: ''
+id: 'protein_structure'
+-->
+
+<html>
+
+<head>
+  <link rel="stylesheet" href="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery-ui.min.css">
+  <link rel="stylesheet" href="https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d.css">
+  <!-- <script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery.min.js"></script> -->
+  <script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery-ui.min.js"></script>
+  <script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/threeClass.min.js"></script>
+  <script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d.min.js"></script>
+</head>
+
+<body>
+  <div id="icn3dwrap" style="padding:20px;"></div>
+</body>
+<script type="text/javascript">
+  $(document).ready(function () {
+    pdbData=`--pdb--`;
+    var cfg = {
+      divid: 'icn3dwrap',
+      width: '1200px',
+      height: '500px',
+      resize: true,
+      rotate: 'right',
+      mobilemenu: false,
+      showcommand: true,
+      showtitle: false,
+      type: 'pdb',
+      closepopup: true,
+    };
+
+
+    var icn3dui = new icn3d.iCn3DUI(cfg);
+    $.when(icn3dui.show3DStructure()).then(function () {
+      icn3dui.icn3d.setOptionCls.setOption('color', 'confidence');
+    });
+    icn3dui.icn3d.pdbParserCls.loadPdbData(pdbData);
+    elements = document.getElementsByClassName('icn3d-menu');
+    elements[0].parentNode.removeChild(elements[0]);
+    console.log(icn3dui);
+    dialog.dialog("close");
+
+  });
+</script>
+</body>
+
+</html>

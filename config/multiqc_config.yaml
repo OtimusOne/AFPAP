@@ -1,0 +1,135 @@
+data_format: 'yaml'
+
+table_columns_placement:
+    sequencing_stats_plot:
+        Molecular weight: 1
+        Atoms: 1.5
+        Aromaticity: 2
+        Instability index: 3
+        Isoelctric point: 4
+        Extinction coefficients: 5
+        Gravy: 6
+
+
+custom_data:
+    sequencing_stats:
+        parent_id: sequence_analysis
+        parent_name: "Sequence Analysis"
+        parent_description: ""
+        id: 'sequencing_stats'
+        section_name: 'Physico-chemical properties'
+        plot_type: 'table'
+        pconfig:
+            id: 'sequencing_stats_plot'
+            namespace: 'Physico-chemical properties'
+            format: '{:,.2f}'
+            table_title: 'Sequence properties'
+            max: 0
+            min: 0
+        headers:
+            Molecular weight:
+                description: "Calculated Molecular from Protein sequence."
+            Atoms:
+                description: "Total number of atoms."
+                format: '{:,.0f}'
+            Aromaticity:
+                description: "Calculated aromaticity according to Lobry, 1994."
+            Instability index:
+                description: "Calculated instability index according to Guruprasad et al 1990."
+            Isoelctric point:
+                description: "Calculated isoelectric point."
+            Extinction coefficients:
+                description: "Calculated the molar extinction coefficient assuming cysteines (reduced) and cystines residues (Cys-Cys-bond)"
+            GRAVY:
+                description: "Calculated gravy according to Kyte and Doolittle."
+            Negatively charged residues:
+                description: "Total number of negatively charged residues (Asp + Glu)."
+                format: '{:,.0f}'
+            Positively charged residues:
+                description: "Total number of positively charged residues (Arg + Lys)."
+                format: '{:,.0f}'
+    
+    aa:
+        parent_id: sequence_analysis
+        parent_name: "Sequence Analysis"
+        parent_description: ""
+        id: 'aa'
+        section_name: 'Amino acids composition'
+        plot_type: 'bargraph'
+        pconfig:
+            id: 'aa_plot'
+            height: '425' 
+        
+    atom_count:
+        parent_id: sequence_analysis
+        parent_name: "Sequence Analysis"
+        parent_description: ""
+        id: 'atom_count'
+        section_name: 'Atoms composition'
+        plot_type: 'bargraph'
+        pconfig:
+            id: 'atom_count_plot'
+            height: '200' 
+        
+    ph:
+        parent_id: sequence_analysis
+        parent_name: "Sequence Analysis"
+        parent_description: ""
+        id: 'ph'
+        section_name: 'Charge at pH'
+        plot_type: 'linegraph'
+        pconfig:
+            id: 'ph_plot'
+            namespace: 'Charge at pH'
+            xlab: 'pH'
+            ylab: 'charge'
+            height: '250'
+            tt_label: '{point.x:.2f}: {point.y:.4f}'
+
+    flex:
+        parent_id: sequence_analysis
+        parent_name: "Sequence Analysis"
+        parent_description: ""
+        id: 'flex'
+        section_name: 'Flexibility'
+        plot_type: 'linegraph'
+        pconfig:
+            id: 'flex_plot'
+            namespace: 'Flexibility'
+            title: 'Flexibility scale'
+            xlab: 'residue'
+            ylab: 'flexibility'
+            height: '250'
+
+    hydro:
+        parent_id: sequence_analysis
+        parent_name: "Sequence Analysis"
+        parent_description: ""
+        id: 'hydro'
+        section_name: 'Hydrophobicity - Kyte&Doolittle'
+        plot_type: 'linegraph'
+        pconfig:
+            id: 'hydro_plot'
+            namespace: 'Hydrophobicity'
+            title: 'Hydrophobicity scale'
+            xlab: 'residue'
+            ylab: 'Hydrophobicity'
+            height: '250'    
+
+sp:
+    sequencing_stats:
+        fn: 'seq_stats.txt'
+    flex:
+        fn: 'seq_stats_flex.txt'
+    hydro:
+        fn: 'seq_stats_hydro.txt'
+    ph:
+        fn: 'seq_stats_ph.txt'
+    aa:
+        fn: 'seq_stats_aa.txt'
+    atom_count:
+        fn: 'seq_stats_atomcount.txt'
+
+report_section_order:
+    protein_sequence:
+        order: -1001

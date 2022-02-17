@@ -1,0 +1,33 @@
+div.code-parent{
+    display: flex;
+    justify-content: center;
+}
+
+pre.codes {
+    white-space: pre-wrap;
+    font-size: 18px;
+  }
+  
+  pre.codes::before {
+    counter-reset: listing 1;
+    content: "";
+  }
+  pre.codes code::after {
+    counter-increment: listing 50;
+    content: "";
+  }
+  pre.codes code::before {
+    content: counter(listing) " ";
+    display: inline-block;
+    width: 3em; 
+    text-align: right; 
+    font-size: 60%; 
+  }
+  div#icn3dwrap * {
+    box-sizing: content-box;
+    -webkit-box-sizing: content-box;
+    line-height: normal;
+}
+div#icn3dwrap label {
+  font-weight: normal;
+}
