@@ -28,6 +28,27 @@ pre.codes {
     -webkit-box-sizing: content-box;
     line-height: normal;
 }
+.codes span{
+  padding: 0 2px 0 2px;
+  font-size: 110%;
+}
+.codes .smallNonpolar{
+  background-color: rgb(255, 166, 133);
+}
+.codes .hydrophobic{
+  background-color:rgb(21, 255, 21);
+}
+.codes .polar{
+  background-color: magenta;
+}
+.codes .negativeCharge{
+  background-color: rgb(255, 67, 67);
+}
+.codes .positiveCharge{
+  background-color: rgb(98, 163, 255);
+}
+
+
 div#icn3dwrap label {
   font-weight: normal;
 }

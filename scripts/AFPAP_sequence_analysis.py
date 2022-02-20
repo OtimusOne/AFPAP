@@ -55,9 +55,20 @@ def section_proteinSequence():
     with open('./output/work/seq_prot_mqc.html', 'w') as f:
         seq_split = 50
         sys.stdout = f
-        print("<!--\nparent_id: sequence_analysis\nparent_name: 'Sequence Analysis'\nparent_description: ''\nid: 'protein_sequence'\n-->\n<div class='code-parent'>\n<pre class='codes'>")
+        residueColorClass = {"GAST": "smallNonpolar", "CVILPFYMW":"hydrophobic", "NQH":"polar", "DE":"negativeCharge","KR":"positiveCharge"}
+        section_description="Lesk residue colour scheme: Small nonpolar - <span style=\"color: rgb(255, 166, 133);\">Orange</span>, Hydrophobic - <span style=\"color: rgb(21, 255, 21);\">Green</span>, Polar - <span style=\"color: magenta;\">Magenta</span>, Negatively charged - <span style=\"color: rgb(255, 67, 67);\">Red</span>, Positively charged - <span style=\"color: rgb(98, 163, 255);\">Blue</span>"
+        print(f"<!--\nparent_id: sequence_analysis\nparent_name: 'Sequence Analysis'\nparent_description: ''\nid: 'protein_sequence'\ndescription: '{section_description}'\n-->\n<div class='code-parent'>\n<pre class='codes'>")
         for i in range(0, len(protein_sequence), seq_split):
-            print(f"<code>{protein_sequence[i:i+seq_split]}</code>")
+            aaLine = "<code>"
+            for residue in protein_sequence[i:i+seq_split]:
+                residueClass=""
+                for key,value in residueColorClass.items():
+                    if residue in key:
+                        residueClass = f"class='{value}'"
+                        break
+                aaLine+=f"<span {residueClass}>{residue}</span>"
+            aaLine+="</code>"
+            print(aaLine)
 
         print("</pre>\n</div>")
 
