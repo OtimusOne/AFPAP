@@ -1,17 +1,3 @@
-'''
-from Bio.PDB import PDBParser
-from Bio.PDB.DSSP import DSSP
-p = PDBParser()
-structure = p.get_structure("APLHA", "./ranked_0.pdb")
-model = structure[0]
-dssp = DSSP(model, "./ranked_0.pdb")
-
-a_key = list(dssp.keys())[2]
-
-dssp[a_key]
-
-
-'''
 from pdbfixer import PDBFixer
 from openmm.app import PDBFile
 

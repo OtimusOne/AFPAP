@@ -78,18 +78,18 @@ def section_sequenceProperties():
         sys.stdout = original_stdout
 
 
-def section_sequenceFlexibility():
+def section_sequenceFlexibility(scaleWindow=9):
     with open('./output/work/seq_stats_flex.txt', 'w') as f:
         sys.stdout = f
-        for x, y in zip([x for x in range(1, len(protein_sequence)+1)], protParam.protein_scale(window=9, param_dict=ProtParamData.Flex)):
-            print(f"{x}\t{y}")
+        for x, y in zip([x for x in range(1, len(protein_sequence)+1)], protParam.protein_scale(window=scaleWindow, param_dict=ProtParamData.Flex)):
+            print(f"{x+scaleWindow//2}\t{y}")
         sys.stdout = original_stdout
 
-def section_sequenceHydrophobicity():
+def section_sequenceHydrophobicity(scaleWindow=9):
     with open('./output/work/seq_stats_hydro.txt', 'w') as f:
         sys.stdout = f
-        for x, y in zip([x for x in range(1, len(protein_sequence)+1)], protParam.protein_scale(window=9, param_dict=ProtParamData.kd)):
-            print(f"{x}\t{y}")
+        for x, y in zip([x for x in range(1, len(protein_sequence)+1)], protParam.protein_scale(window=scaleWindow, param_dict=ProtParamData.kd)):
+            print(f"{x+scaleWindow//2}\t{y}")
         sys.stdout = original_stdout
 
 

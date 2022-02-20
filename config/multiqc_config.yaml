@@ -106,7 +106,8 @@ custom_data:
         parent_name: "Sequence Analysis"
         parent_description: ""
         id: 'hydro'
-        section_name: 'Hydrophobicity - Kyte&Doolittle'
+        section_name: 'Hydrophobicity'
+        description: 'Kyte&Doolittle scale'
         plot_type: 'linegraph'
         pconfig:
             id: 'hydro_plot'

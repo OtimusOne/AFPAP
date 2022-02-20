@@ -1,3 +1,0 @@
-python scripts/component_sequence_analysis.py -i input/LGB.fasta
-python scripts/component_structure.py -i ./input/ranked_0.pdb
-multiqc -f -c ./config/multiqc_config.yaml --custom-css-file ./config/multiqc_custom_css.css -o output/ .
