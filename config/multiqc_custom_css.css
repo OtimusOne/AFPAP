@@ -1,51 +1,96 @@
-div.code-parent{
-    display: flex;
-    justify-content: center;
+div.code-parent {
+  display: flex;
+  justify-content: center;
 }
 
 pre.codes {
-    white-space: pre-wrap;
-    font-size: 18px;
-  }
-  
-  pre.codes::before {
-    counter-reset: listing 1;
-    content: "";
-  }
-  pre.codes code::after {
-    counter-increment: listing 50;
-    content: "";
-  }
-  pre.codes code::before {
-    content: counter(listing) " ";
-    display: inline-block;
-    width: 3em; 
-    text-align: right; 
-    font-size: 60%; 
-  }
-  div#icn3dwrap * {
-    box-sizing: content-box;
-    -webkit-box-sizing: content-box;
-    line-height: normal;
+  white-space: pre-wrap;
+  font-size: 18px;
+  overflow: visible;
 }
-.codes span{
-  padding: 0 2px 0 2px;
-  font-size: 110%;
+
+pre.codes::before {
+  counter-reset: listing 1;
+  content: "";
 }
-.codes .smallNonpolar{
+
+pre.codes code::after {
+  counter-increment: listing 50;
+  content: "";
+}
+
+pre.codes code::before {
+  content: counter(listing) " ";
+  display: inline-block;
+  width: 3em;
+  text-align: right;
+  font-size: 60%;
+}
+
+div#icn3dwrap * {
+  box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  line-height: normal;
+}
+
+.codes .smallNonpolar {
   background-color: rgb(255, 166, 133);
 }
-.codes .hydrophobic{
-  background-color:rgb(21, 255, 21);
+
+.codes .hydrophobic {
+  background-color: rgb(21, 255, 21);
 }
-.codes .polar{
+
+.codes .polar {
   background-color: magenta;
 }
-.codes .negativeCharge{
+
+.codes .negativeCharge {
   background-color: rgb(255, 67, 67);
 }
-.codes .positiveCharge{
+
+.codes .positiveCharge {
   background-color: rgb(98, 163, 255);
+}
+
+.residueTooltip {
+  position: relative;
+  display: inline-block;
+  margin: 0.5px;
+  padding: 0 3px 0 3px;
+  font-size: 110%;
+  border-radius: 10px;
+}
+
+.residueTooltip .residueTooltipText {
+  visibility: hidden;
+  width: 80px;
+  background-color: #4f4f4f;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 4px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 110%;
+  left: 50%;
+  margin-left: -40px;
+  font-size: 90%;
+}
+
+.residueTooltip .residueTooltipText::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 4px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
+.residueTooltip:hover .residueTooltipText {
+  visibility: visible;
 }
 
 

@@ -13,4 +13,3 @@ with open(args.input, 'r') as pdbFile:
         templateData = templateData.replace("--pdb--", pdbData)
         with open('./output/work/struct_viewer_mqc.html', 'w') as f:
             f.write(templateData)
-
