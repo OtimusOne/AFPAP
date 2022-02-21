@@ -33,6 +33,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input", help="Input file")
 args = parser.parse_args()
 
+print("--- Secondary structure calculation... ---")
+
 p = PDBParser()
 structure = p.get_structure("APLHA", args.input)
 model = structure[0]

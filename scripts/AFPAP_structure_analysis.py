@@ -1,13 +1,10 @@
-import sys
-import os
 import argparse
-import numpy as np
-from Bio import SeqIO
-from Bio.SeqUtils.ProtParam import ProteinAnalysis
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input", help="Input file")
 args = parser.parse_args()
+
+print("--- Structure analysis... ---")
 
 with open(args.input, 'r') as pdbFile:
     pdbData = pdbFile.read()

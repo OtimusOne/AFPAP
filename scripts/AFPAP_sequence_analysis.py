@@ -1,4 +1,3 @@
-import sys
 import os
 import argparse
 import numpy as np
@@ -48,96 +47,87 @@ for aa in AAdict:
     atomCount["O"] += residue_atom_count[aa]["O"]*AAdict[aa]
     atomCount["S"] += residue_atom_count[aa]["S"]*AAdict[aa]
 
-original_stdout = sys.stdout
-
-
 def section_proteinSequence():
     with open('./output/work/seq_prot_mqc.html', 'w') as f:
         seq_split = 50
-        sys.stdout = f
         residueColorClass = {"GAST": "smallNonpolar", "CVILPFYMW":"hydrophobic", "NQH":"polar", "DE":"negativeCharge","KR":"positiveCharge"}
-        section_description="Lesk residue colour scheme: Small nonpolar - <span style=\"color: rgb(255, 166, 133);\">Orange</span>, Hydrophobic - <span style=\"color: rgb(21, 255, 21);\">Green</span>, Polar - <span style=\"color: magenta;\">Magenta</span>, Negatively charged - <span style=\"color: rgb(255, 67, 67);\">Red</span>, Positively charged - <span style=\"color: rgb(98, 163, 255);\">Blue</span>"
-        print(f"<!--\nparent_id: sequence_analysis\nparent_name: 'Sequence Analysis'\nparent_description: ''\nid: 'protein_sequence'\ndescription: '{section_description}'\n-->\n<div class='code-parent'>\n<pre class='codes'>")
+        residueLines = "\n"
         for i in range(0, len(protein_sequence), seq_split):
-            aaLine = "<code>"
+            residueLines += "<code>"
             for residue in protein_sequence[i:i+seq_split]:
                 residueClass=""
                 for key,value in residueColorClass.items():
                     if residue in key:
                         residueClass = f"class='{value}'"
                         break
-                aaLine+=f"<span {residueClass}>{residue}</span>"
-            aaLine+="</code>"
-            print(aaLine)
+                residueLines+=f"<span {residueClass}>{residue}</span>"
+            residueLines+="</code>\n"
 
-        print("</pre>\n</div>")
-
-        sys.stdout = original_stdout
-
+        with open('config/sequenceViewer_template.html', 'r') as template:
+            templateData = template.read()
+            templateData = templateData.replace("--sequence--", residueLines)
+            print(templateData, file=f)
 
 def section_sequenceProperties():
     with open('./output/work/seq_stats.txt', 'w') as f:
-        sys.stdout = f
+
         negativeCharge = protein_sequence.count(
             'D')+protein_sequence.count('E')
         positiveCharge = protein_sequence.count(
             'R')+protein_sequence.count('K')
         print("Input", "Molecular weight", "Atoms", "Aromaticity", "Instability index", "Isoelctric point",
-              "Extinction coefficients", "GRAVY", "Negatively charged residues", "Positively charged residues",  sep='\t')
+              "Extinction coefficients", "GRAVY", "Negatively charged residues", "Positively charged residues",  sep='\t', file=f)
         print(os.path.basename(args.input), protParam.molecular_weight(), atomCount["C"]+atomCount["H"]+atomCount["N"]+atomCount["O"]+atomCount["S"], protParam.aromaticity(), protParam.instability_index(), protParam.isoelectric_point(
-        ), f"{protParam.molar_extinction_coefficient()[0]} : {protParam.molar_extinction_coefficient()[1]}", protParam.gravy(), negativeCharge, positiveCharge, sep='\t')
-        sys.stdout = original_stdout
+        ), f"{protParam.molar_extinction_coefficient()[0]} : {protParam.molar_extinction_coefficient()[1]}", protParam.gravy(), negativeCharge, positiveCharge, sep='\t',file=f)
+
 
 
 def section_sequenceFlexibility(scaleWindow=9):
     with open('./output/work/seq_stats_flex.txt', 'w') as f:
-        sys.stdout = f
+
         for x, y in zip([x for x in range(1, len(protein_sequence)+1)], protParam.protein_scale(window=scaleWindow, param_dict=ProtParamData.Flex)):
-            print(f"{x+scaleWindow//2}\t{y}")
-        sys.stdout = original_stdout
+            print(f"{x+scaleWindow//2}\t{y}",file=f)
+
 
 def section_sequenceHydrophobicity(scaleWindow=9):
     with open('./output/work/seq_stats_hydro.txt', 'w') as f:
-        sys.stdout = f
         for x, y in zip([x for x in range(1, len(protein_sequence)+1)], protParam.protein_scale(window=scaleWindow, param_dict=ProtParamData.kd)):
-            print(f"{x+scaleWindow//2}\t{y}")
-        sys.stdout = original_stdout
+            print(f"{x+scaleWindow//2}\t{y}",file=f)
 
 
 def section_sequencePH():
     with open('./output/work/seq_stats_ph.txt', 'w') as f:
-        sys.stdout = f
         for x in np.arange(1, 14.01, 0.05):
-            print(x, protParam.charge_at_pH(x), sep="\t")
-        sys.stdout = original_stdout
+            print(x, protParam.charge_at_pH(x), sep="\t",file=f)
+
 
 
 def section_atomCount():
     with open('./output/work/seq_stats_atomcount.txt', 'w') as f:
-        sys.stdout = f
-        print("Atom", end="\t")
-        for x in atomCount:
-            print(x, end="\t")
 
-        print("\nCount", end="\t")
+        print("Atom", end="\t",file=f)
         for x in atomCount:
-            print(atomCount[x], end="\t")
-        sys.stdout = original_stdout
+            print(x, end="\t",file=f)
+
+        print("\nCount", end="\t",file=f)
+        for x in atomCount:
+            print(atomCount[x], end="\t",file=f)
+
 
 
 def section_residueCount():
     with open('./output/work/seq_stats_aa.txt', 'w') as f:
-        sys.stdout = f
-        print("Amino acid", end="\t")
+
+        print("Amino acid", end="\t",file=f)
         for aa in AAdict:
-            print(aa, sep='\t', end="\t")
-        print()
-        print("Amino acid", end="\t")
+            print(aa, sep='\t', end="\t",file=f)
+        print("\n",file=f)
+        print("Amino acid", end="\t",file=f)
         for aa in AAdict:
-            print(AAdict[aa], sep='\t', end="\t")
-        sys.stdout = original_stdout
+            print(AAdict[aa], sep='\t', end="\t",file=f)
 
 
+print("--- Sequence analysis... ---")
 section_proteinSequence()
 section_sequenceProperties()
 section_sequenceFlexibility()
