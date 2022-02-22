@@ -121,11 +121,11 @@ def section_atomCount():
 def section_residueCount():
     with open('./output/work/seq_stats_aa.txt', 'w') as f:
 
-        print("Amino acid", end="\t", file=f)
+        print("Residue", end="\t", file=f)
         for aa in AAdict:
             print(aa, sep='\t', end="\t", file=f)
         print("\n", file=f)
-        print("Amino acid", end="\t", file=f)
+        print("Residue", end="\t", file=f)
         for aa in AAdict:
             print(AAdict[aa], sep='\t', end="\t", file=f)
 

@@ -38,40 +38,51 @@ args = parser.parse_args()
 
 print("--- Secondary structure calculation... ---")
 
-p = PDBParser()
-structure = p.get_structure("APLHA", args.input)
-model = structure[0]
-df = get_dssp_df(model, args.input)
-# print(df)
-ss = "".join(df["ss"].tolist())
-for r in (("G", "H"), ("I", "H"), ("S", "-"), ("T", "-"), ("B", "E")):
-    ss = ss.replace(*r)
-# print(ss)
-
-
-kHelix = 1
-ssRows = []
-helixes = [m.span() for m in re.finditer('[H]{3,}', ss)]
-for helixStart, helixEnd in helixes:
-    helixStart, helixEnd = df.iloc[helixStart], df.iloc[helixEnd-1]
-    helixRow = f"HELIX  {prependWhitespace(str(kHelix),3)} {prependWhitespace(str(kHelix),3)} {prependWhitespace(str(helixStart['aa_three']),3)} {helixStart['chain']} {prependWhitespace(str(helixStart['resnum']),4)}  {prependWhitespace(str(helixEnd['aa_three']),3)} {helixEnd['chain']} {prependWhitespace(str(helixEnd['resnum']),4)}  1                               {prependWhitespace(str(helixEnd['resnum']-helixStart['resnum']+1),5)}"
-    # print(helixRow)
-    ssRows.append(helixRow)
-    kHelix += 1
-
-
-kSheets = 1
-sheets = [m.span() for m in re.finditer('[E]{3,}', ss)]
-for sheetStart, sheetEnd in sheets:
-    sheetStart, sheetEnd = df.iloc[sheetStart], df.iloc[sheetEnd-1]
-    sheetRow = f"SHEET  {prependWhitespace(str(kSheets),3)} {prependWhitespace(str(kSheets),3)} 1 {prependWhitespace(str(sheetStart['aa_three']),3)} {sheetStart['chain']}{prependWhitespace(str(sheetStart['resnum']),4)}  {prependWhitespace(str(sheetEnd['aa_three']),3)} {sheetEnd['chain']}{prependWhitespace(str(sheetEnd['resnum']),4)}  0"
-    # print(sheetRow)
-    ssRows.append(sheetRow)
-    kSheets += 1
 
 with open(args.input, 'r') as pdbFile:
     pdbData = pdbFile.read()
-    with open(f'./output/work/{os.path.basename(args.input).split(".")[0]}_secondary_structure.pdb', 'w') as f:
-        for ss in ssRows:
-            print(ss, file=f)
-        print(pdbData, file=f)
+    with open(f'./output/work/proteinStructure_ss.pdb', 'w') as f:
+
+        if pdbData.find("HELIX") == -1 and pdbData.find("SHEET") == -1:
+
+            p = PDBParser()
+            structure = p.get_structure("APLHA", args.input)
+            model = structure[0]
+            df = get_dssp_df(model, args.input)
+            # print(df)
+            ss = "".join(df["ss"].tolist())
+            for r in (("G", "H"), ("I", "H"), ("S", "-"), ("T", "-"), ("B", "E")):
+                ss = ss.replace(*r)
+            # print(ss)
+
+            kHelix = 1
+            ssRows = []
+            helixes = [m.span() for m in re.finditer('[H]{3,}', ss)]
+            for helixStart, helixEnd in helixes:
+                helixStart, helixEnd = df.iloc[helixStart], df.iloc[helixEnd-1]
+                helixRow = f"HELIX  {prependWhitespace(str(kHelix),3)} {prependWhitespace(str(kHelix),3)} {prependWhitespace(str(helixStart['aa_three']),3)} {helixStart['chain']} {prependWhitespace(str(helixStart['resnum']),4)}  {prependWhitespace(str(helixEnd['aa_three']),3)} {helixEnd['chain']} {prependWhitespace(str(helixEnd['resnum']),4)}  1                               {prependWhitespace(str(helixEnd['resnum']-helixStart['resnum']+1),5)}"
+                # print(helixRow)
+                ssRows.append(helixRow)
+                kHelix += 1
+
+            kSheets = 1
+            sheets = [m.span() for m in re.finditer('[E]{3,}', ss)]
+            for sheetStart, sheetEnd in sheets:
+                sheetStart, sheetEnd = df.iloc[sheetStart], df.iloc[sheetEnd-1]
+                sheetRow = f"SHEET  {prependWhitespace(str(kSheets),3)} {prependWhitespace(str(kSheets),3)} 1 {prependWhitespace(str(sheetStart['aa_three']),3)} {sheetStart['chain']}{prependWhitespace(str(sheetStart['resnum']),4)}  {prependWhitespace(str(sheetEnd['aa_three']),3)} {sheetEnd['chain']}{prependWhitespace(str(sheetEnd['resnum']),4)}  0"
+                # print(sheetRow)
+                ssRows.append(sheetRow)
+                kSheets += 1
+
+            x = re.search("ATOM      1", pdbData)
+            if x:
+                if x.span()[0] != 0:
+                    print(pdbData[:x.span()[0]], file=f, end="")
+                for ss in ssRows:
+                    print(ss, file=f)
+                print(pdbData[x.span()[0]:], file=f)
+            else:
+                print(pdbData, file=f)
+
+        else:
+            print(pdbData, file=f)

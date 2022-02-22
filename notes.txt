@@ -6,3 +6,33 @@ multiqc -f -c ./config/multiqc_config.yaml --custom-css-file ./config/multiqc_cu
 
 
 sudo apt-get install dssp
+mamba install -c conda-forge pymol-open-source
+
+prank predict -f input/AF2.pdb -o output/work -c alphafold
+pymol -cq
+
+
+        png ./test1.png, dpi=300 
+
+        rotate y,90
+        png ./test2.png, dpi=300 
+
+        rotate y,90
+        png ./test3.png, dpi=300 
+
+        rotate y,90
+        png ./test4.png, dpi=300 
+
+        rotate x,90
+        png ./test5.png, dpi=300 
+
+        rotate x,180
+        png ./test6.png, dpi=300 
+
+./script.sh -i input/LGB.fasta -p input/ranked_0.pdb 
+
+ ./script.sh -i input/FADS6.fasta -p input/FADS6.pdb 
+
+ ./script.sh -i input/JAGN1.fasta -p input/JAGN1.pdb 
+
+./script.sh -i input/TJB26.fasta -p input/TJB26.pdb 

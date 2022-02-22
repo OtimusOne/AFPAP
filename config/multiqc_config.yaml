@@ -1,16 +1,5 @@
 data_format: 'yaml'
 
-table_columns_placement:
-    sequencing_stats_plot:
-        Molecular weight: 1
-        Atoms: 1.5
-        Aromaticity: 2
-        Instability index: 3
-        Isoelctric point: 4
-        Extinction coefficients: 5
-        Gravy: 6
-
-
 custom_data:
     sequencing_stats:
         parent_id: sequence_analysis
@@ -21,7 +10,7 @@ custom_data:
         plot_type: 'table'
         pconfig:
             id: 'sequencing_stats_plot'
-            namespace: 'Physico-chemical properties'
+            namespace: 'Sequence properties'
             format: '{:,.2f}'
             table_title: 'Sequence properties'
             max: 0
@@ -117,6 +106,24 @@ custom_data:
             ylab: 'Hydrophobicity'
             height: '250'    
 
+    
+    p2rank:
+        parent_id: structure_analysis
+        parent_name: "Structure Analysis"
+        parent_description: ""
+        id: 'p2rank'
+        section_name: 'P2Rank - Pocket prediction'
+        plot_type: 'table'
+        pconfig:
+            id: 'p2rank_plot'
+            namespace: 'P2Rank pockets'
+            format: '{:,.2f}'
+            table_title: 'P2Rank pockets'
+            max: 0
+            min: 0
+
+
+
 sp:
     sequencing_stats:
         fn: 'seq_stats.txt'
@@ -130,7 +137,22 @@ sp:
         fn: 'seq_stats_aa.txt'
     atom_count:
         fn: 'seq_stats_atomcount.txt'
+    p2rank:
+        fn: 'p2rank_predictions.csv'
 
 report_section_order:
     protein_sequence:
         order: -1001
+    protein_structure:
+        order: -1000
+
+
+table_columns_placement:
+    sequencing_stats_plot:
+        Molecular weight: 1
+        Atoms: 1.5
+        Aromaticity: 2
+        Instability index: 3
+        Isoelctric point: 4
+        Extinction coefficients: 5
+        Gravy: 6
