@@ -130,7 +130,7 @@ def section_residueCount():
             print(AAdict[aa], sep='\t', end="\t", file=f)
 
 
-print("--- Sequence analysis... ---")
+print("Sequence analysis...")
 section_proteinSequence()
 section_sequenceProperties()
 section_sequenceFlexibility()

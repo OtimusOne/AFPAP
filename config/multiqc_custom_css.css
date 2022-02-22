@@ -97,3 +97,31 @@ div#icn3dwrap * {
 div#icn3dwrap label {
   font-weight: normal;
 }
+
+.pocketGallery {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.pocketGalleryRow {
+  width: 80%;
+  flex-direction: row;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pocketGalleryColumn {
+  padding: 5px;
+}
+
+.pocketGalleryColumn img {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.pocketGalleryColumn img:hover {
+  opacity: 1;
+}

@@ -9,7 +9,7 @@ AlphaFold-based Protein Analysis Pipeline
     https://github.com/rdk/p2rank
 3. AFPAP
 ```
-mamba install -c conda-forge numpy pandas biopython pymol-open-source
+mamba install -c conda-forge -c anaconda numpy pandas biopython pymol-open-source pillow
 
 sudo apt-get install dssp
 ```

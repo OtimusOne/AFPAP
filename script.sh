@@ -13,7 +13,6 @@ if [ ! -f "$inputFile" ] || [ ! -f "$pdbFile" ] ; then
     exit 1
 fi
 
-
 echo "Input: $inputFile";
 echo "PDB: $pdbFile";
 
@@ -30,7 +29,7 @@ python scripts/AFPAP_p2rank_visualization.py -p output/work/visualizations/prote
 
 cd output/work/visualizations
 pymol -cq proteinStructure_ss.pdb.pml
-
 cd $baseDir
+python scripts/AFPAP_p2rank_gallery.py
 
-multiqc -f -c ./config/multiqc_config.yaml --custom-css-file ./config/multiqc_custom_css.css -o output/ .
+multiqc -f -c ./config/multiqc_config.yaml --custom-css-file ./config/multiqc_custom_css.css -o output/ output/

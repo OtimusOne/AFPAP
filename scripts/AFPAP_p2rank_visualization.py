@@ -13,7 +13,8 @@ with open(args.pymol_script, 'a') as file:
 
 df = pd.read_csv(args.csv)
 df = df.rename(columns=lambda x: x.strip())
-df = df.drop(["residue_ids","surf_atom_ids"],axis=1)
+df = df.drop(["residue_ids", "surf_atom_ids"], axis=1)
 df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
-df.columns=["Name","Rank","Score","Probability","SAS points", "Surface atoms","Center X", "Center Y", "Center Z"]
+df.columns = ["Name", "Rank", "Score", "Probability", "SAS points",
+              "Surface atoms", "Center X", "Center Y", "Center Z"]
 df.to_csv("./output/work/p2rank_predictions.csv", index=False)

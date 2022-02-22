@@ -1,0 +1,51 @@
+<!--
+parent_id: structure_analysis
+parent_name: 'Structure Analysis'
+parent_description: ''
+id: 'pocket_viewer'
+section_name: 'Pocket Viewer'
+-->
+
+<div class="pocketGallery">
+    <div class="pocketGalleryRow">
+        <div class="pocketGalleryColumn">
+            <img id="pg1" src="data:image/png;base64,--pocket1--" style="width:100%"
+                onclick="selectGalleryImage(this);">
+        </div>
+        <div class="pocketGalleryColumn">
+            <img id="pg2" src="data:image/png;base64,--pocket2--" style="width:100%"
+                onclick="selectGalleryImage(this);">
+        </div>
+        <div class="pocketGalleryColumn">
+            <img id="pg3" src="data:image/png;base64,--pocket3--" style="width:100%"
+                onclick="selectGalleryImage(this);">
+        </div>
+        <div class="pocketGalleryColumn">
+            <img id="pg4" src="data:image/png;base64,--pocket4--" style="width:100%"
+                onclick="selectGalleryImage(this);">
+        </div>
+        <div class="pocketGalleryColumn">
+            <img id="pg5" src="data:image/png;base64,--pocket5--" style="width:100%"
+                onclick="selectGalleryImage(this);">
+        </div>
+        <div class="pocketGalleryColumn">
+            <img id="pg6" src="data:image/png;base64,--pocket6--" style="width:100%"
+                onclick="selectGalleryImage(this);">
+        </div>
+    </div>
+
+    <div class="pocketGalleryContainer">
+        <img id="expandedImg">
+    </div>
+
+</div>
+<script>
+    function selectGalleryImage(imgs) {
+        var expandImg = document.getElementById("expandedImg");
+        expandImg.src = imgs.src;
+    }
+    $(document).ready(function () {
+        var img1 = document.getElementById("pg1");
+        selectGalleryImage(img1);
+    });
+</script>

@@ -121,6 +121,26 @@ custom_data:
             table_title: 'P2Rank pockets'
             max: 0
             min: 0
+        headers:
+            Rank:
+                format: '{:,.0f}'
+                description: ''
+            Score:
+                description: ''
+            Probability:
+                description: ''
+            SAS points:
+                description: ''
+                format: '{:,.0f}'
+            Surface atoms:
+                description: ''
+                format: '{:,.0f}'
+            Center X:
+                description: ''
+            Center Y:
+                description: ''
+            Center Z:
+                description: ''
 
 
 
@@ -156,3 +176,12 @@ table_columns_placement:
         Isoelctric point: 4
         Extinction coefficients: 5
         Gravy: 6
+    p2rank_plot:
+        Rank: 1
+        Score: 2
+        Probability: 3
+        SAS points: 4
+        Surface atoms: 5
+        Center X: 6
+        Center Y: 7 
+        Center Z: 8
