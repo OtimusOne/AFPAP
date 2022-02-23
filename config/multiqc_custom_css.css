@@ -125,3 +125,7 @@ div#icn3dwrap label {
 .pocketGalleryColumn img:hover {
   opacity: 1;
 }
+
+#expandedImg{
+  width: 100%;
+}
