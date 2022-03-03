@@ -11,10 +11,30 @@ mamba install -c conda-forge pymol-open-source
 prank predict -f input/AF2.pdb -o output/work -c alphafold
 pymol -cq
 
-./script.sh -i input/LGB.fasta -p input/ranked_0.pdb 
+./script.sh -i input/LGB.fasta -p input/LGB.pdb 
 
 ./script.sh -i input/FADS6.fasta -p input/FADS6.pdb 
 
 ./script.sh -i input/JAGN1.fasta -p input/JAGN1.pdb 
 
 ./script.sh -i input/TJB26.fasta -p input/TJB26.pdb 
+
+
+prepare_receptor -r input/1iep.pdb -o output/dock/1iep_receptor.pdbqt -A "hydrogens"
+
+prepare_ligand -l input/1iep_STI.mol2 -o output/dock/1iep_STI2.pdbqt
+
+python scripts/prepare_flexreceptor.py -r output/dock/1fpu.pdbqt -s THR315,GLU316,PHE317 -v 1
+
+vina --receptor output/dock/1iep_receptor.pdbqt --ligand output/dock/1iep_STI.pdbqt --config output/dock/vina_config.txt --exhaustiveness=32 --out output/dock/1iep_vina.pdbqt
+
+vina --receptor output/dock/1fpu_rigid.pdbqt --flex output/dock/1fpu_flex.pdbqt --ligand output/dock/1iep_STI.pdbqt --config output/dock/vina_config.txt --exhaustiveness=32 --out output/dock/1fpu_ligand_flex_vina.pdbqt
+
+
+
+conda remove --name myenv --all
+conda install -c bioconda/label/cf201901 mgltools
+
+conda install -c hcc adfr-suite
+conda install -c conda-forge openbabel rdkit
+pip install meeko

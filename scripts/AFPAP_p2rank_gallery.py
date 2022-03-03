@@ -35,7 +35,7 @@ def trim(im):
     bbox = diff.getbbox()
     if bbox:
         im = im.crop(bbox)
-    baseHeight = 360
+    baseHeight = 480
     hpercent = (baseHeight/float(im.size[1]))
     wsize = int((float(im.size[0])*float(hpercent)))
     im = im.resize((wsize, baseHeight), Image.ANTIALIAS)
@@ -62,7 +62,7 @@ def generatePocketGallery():
     with open('config/pocketViewer_template.html', 'r') as template:
         templateData = template.read()
         colors = createSpectrum(df.shape[0], 0.6, 0.6, 1.2)
-        pocketDescription = "<span style=\"width: 100%;display: inline-flex;justify-content: center;\">"
+        pocketDescription = "<span style=\"width: 100%;display: inline-flex;justify-content: center;flex-wrap: wrap;\">"
         for i in range(df.shape[0]):
             pocketDescription += f"<span style=\"padding: 0 5px;\">Pocket{i+1}<span style=\"color:rgb({colors[i][0]*255},{colors[i][1]*255},{colors[i][2]*255});font-size:16px\">&#11044</span></span>\t "
         pocketDescription += "</span>"
