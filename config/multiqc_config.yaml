@@ -108,8 +108,8 @@ custom_data:
 
     
     p2rank:
-        parent_id: structure_analysis
-        parent_name: "Structure Analysis"
+        parent_id: molecular_docking
+        parent_name: "Molecular Docking"
         parent_description: ""
         id: 'p2rank'
         section_name: 'P2Rank - Pocket prediction'
@@ -124,16 +124,16 @@ custom_data:
         headers:
             Rank:
                 format: '{:,.0f}'
-                description: ''
+                description: 'Pocket rank'
             Score:
-                description: ''
+                description: 'Pocket score'
             Probability:
-                description: ''
+                description: 'Probability of being a ligand-binding site'
             SAS points:
-                description: ''
+                description: 'Solvent Accessible Surface points'
                 format: '{:,.0f}'
             Surface atoms:
-                description: ''
+                description: 'Solvent exposed atoms'
                 format: '{:,.0f}'
             Center X:
                 description: ''
@@ -165,6 +165,12 @@ report_section_order:
         order: -1001
     protein_structure:
         order: -1000
+    molecular_docking:
+        order: -999
+    p2rank:
+        order: -100
+    pocket_viewer:
+        order: -99
 
 
 table_columns_placement:
@@ -185,3 +191,10 @@ table_columns_placement:
         Center X: 6
         Center Y: 7 
         Center Z: 8
+    docking_plot:
+        Best Score: 1
+        Avg. Score: 2
+        Center: 3
+        Box Size: 4
+        Spacing: 5
+        Exhaustiveness: 6

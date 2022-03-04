@@ -1,0 +1,28 @@
+# parent_id: molecular_docking
+# parent_name: 'Molecular docking'
+# parent_description: ''
+# id: '--ligand--'
+# section_name: 'AutoDock Vina - --ligand--'
+# plot_type: 'table'
+# pconfig:
+#    id: 'docking_plot'
+#    namespace: 'AutoDockVina results'
+#    max: 0
+#    min: 0
+# headers:
+#    Best Score:
+#       format: '{:,.4f}'
+#       description: 'Best energy score(kcal/mol)'
+#    Avg. Score:
+#       description: 'Average energy score and standard deviation for poses within 3 kcal/mol from best pose'
+#    Center:
+#       description: 'Center docking position'
+#    Box Size:
+#       description: 'Size of the box(Å)'
+#    Spacing:
+#       format: '{:,.3f}'
+#       description: 'Grid spacing'
+#    Exhaustiveness:
+#       format: '{:,.0f}'
+#       description: 'Number of MC runs'
+Pocket	Best Score	Avg. Score	Center	Box Size	Spacing	Exhaustiveness
