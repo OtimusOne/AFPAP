@@ -7,20 +7,14 @@ import pandas as pd
 
 def createSpectrum(numColors,  sat,  hueMin,  hueMax):
     table = [0]*numColors
-
     if (numColors == 1):
-
         table[0] = createSpectrum(2, sat, hueMin, hueMax)[0]
-
     else:
         hueRange = hueMax - hueMin
-
         for i in range(numColors):
             hue = hueMin + hueRange * (i / numColors)
-
             if (hue > 1):
                 hue -= 1
-
             if (i % 2 == 0):
                 table[i] = colorsys.hsv_to_rgb(hue, sat,  0.9)
             else:
@@ -43,16 +37,15 @@ def trim(im):
 
 
 def generatePocketGallery():
-
     df = pd.read_csv("./output/work/p2rank_predictions.csv")
-
     if df.shape[0] == 0:
         return
 
     imgPath = ["./output/work/p2rank_1.png", "./output/work/p2rank_2.png", "./output/work/p2rank_3.png",
-               "./output/work/p2rank_4.png", "./output/work/p2rank_5.png", "./output/work/p2rank_6.png"]
+               "./output/work/p2rank_4.png", "./output/work/p2rank_5.png", "./output/work/p2rank_6.png",
+               "./output/work/p2rank_7.png", "./output/work/p2rank_8.png", "./output/work/p2rank_9.png", "./output/work/p2rank_10.png"]
     imgCropPath = ["./output/work/p2rank_crop_1.png", "./output/work/p2rank_crop_2.png", "./output/work/p2rank_crop_3.png",
-                   "./output/work/p2rank_crop_4.png", "./output/work/p2rank_crop_5.png", "./output/work/p2rank_crop_6.png"]
+                   "./output/work/p2rank_crop_4.png", "./output/work/p2rank_crop_5.png", "./output/work/p2rank_crop_6.png", "./output/work/p2rank_crop_7.png", "./output/work/p2rank_crop_8.png", "./output/work/p2rank_crop_9.png", "./output/work/p2rank_crop_10.png"]
 
     for path, cropPath in zip(imgPath, imgCropPath):
         im = Image.open(path)

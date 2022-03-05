@@ -1,6 +1,5 @@
 #! /bin/bash
 
-
 while getopts i:p:l: flag
 do
     case "${flag}" in
@@ -32,7 +31,6 @@ cd output/work/visualizations
 pymol -cq proteinStructure_ss.pdb.pml
 cd $baseDir
 python scripts/AFPAP_p2rank_gallery.py
-
 
 if [ -f "$ligandFile" ] ; then
     cp ./output/work/proteinStructure_ss.pdb ./output/work/docking/receptor.pdb
