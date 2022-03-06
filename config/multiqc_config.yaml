@@ -47,7 +47,7 @@ custom_data:
         plot_type: 'bargraph'
         pconfig:
             id: 'aa_plot'
-            height: '425' 
+            height: '450' 
         
     atom_count:
         parent_id: sequence_analysis
