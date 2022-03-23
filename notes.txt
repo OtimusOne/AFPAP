@@ -45,3 +45,13 @@ conda install -c bioconda/label/cf201901 mgltools
 conda install -c hcc adfr-suite
 conda install -c conda-forge openbabel rdkit
 pip install meeko
+
+Lesk residue colour scheme: Small nonpolar - <span style="color: rgb(255, 166, 133);">Orange</span>, Hydrophobic - <span style="color: rgb(21, 255, 21);">Green</span>, Polar - <span style="color: magenta;">Magenta</span>, Negatively charged - <span style="color: rgb(255, 67, 67);">Red</span>, Positively charged - <span style="color: rgb(98, 163, 255);">Blue</span>
+
+hmmscan --cut_ga --pfamtblout o1.txt --tblout o2.txt --acc -o o3.txt Pfam-A.hmm ../AFPAP/input/abl.fasta
+
+
+conda install -c bioconda pfam_scan perl-json
+conda install -y -c bioconda hmmer==3.3.2 hhsuite==3.3.0 kalign2==2.04
+
+pfam_scan.pl -clan_overlap -align -json pretty -fasta ../AFPAP/input/RBP4.fasta -dir . > o4.txt

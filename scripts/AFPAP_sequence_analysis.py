@@ -52,8 +52,30 @@ for aa in AAdict:
 def section_proteinSequence():
     with open('./output/work/seq_prot_mqc.html', 'w') as f:
         seq_split = 50
-        residueColorClass = {"GAST": "smallNonpolar", "CVILPFYMW": "hydrophobic",
-                             "NQH": "polar", "DE": "negativeCharge", "KR": "positiveCharge"}
+        residueColorClass = {"GAST": "LeskSmallNonpolar", "CVILPFYMW": "LeskHydrophobic",
+                             "NQH": "LeskPolar", "DE": "LeskNegativeCharge", "KR": "LeskPositiveCharge"}
+        residueProperties = {
+            "A": ["Alanine", "Small", "Hydrophobic", "Non-polar"],
+            "R": ["Arginine", "Hydrophilic", "Polar positive"],
+            "N": ["Asparagine", "Small", "Hydrophilic", "Polar"],
+            "D": ["Aspartic acid ", "Small", "Hydrophilic", "Polar negative"],
+            "C": ["Cysteine", "Small", "Hydrophobic", "Special"],
+            "E": ["Glutamic acid", "Hydrophilic", "Polar negative"],
+            "Q": ["Glutamine", "Hydrophilic", "Polar"],
+            "G": ["Glycine", "Small", "Non-polar"],
+            "H": ["Histidine", "Polar positive"],
+            "I": ["Isoleucine", "Hydrophobic", "Non-polar"],
+            "L": ["Leucine", "Hydrophobic", "Non-polar"],
+            "K": ["Lysine", "Hydrophilic", "Polar positive"],
+            "M": ["Methionine", "Hydrophobic", "Non-polar"],
+            "F": ["Phenylalanine", "Hydrophobic", "Non-polar"],
+            "P": ["Proline", "Small", "Non-polar"],
+            "S": ["Serine", "Small", "Polar"],
+            "T": ["Thereonine", "Small", "Polar"],
+            "W": ["Tryptophan", "Hydrophobic", "Non-polar"],
+            "Y": ["Tyrosine", "Polar"],
+            "V": ["Valine", "Hydrophobic", "Non-polar"],
+        }
         resNumber = 1
         residueLines = "\n"
         for i in range(0, len(protein_sequence), seq_split):
@@ -62,9 +84,10 @@ def section_proteinSequence():
                 residueClass = ""
                 for key, value in residueColorClass.items():
                     if residue in key:
-                        residueClass = f"class='residueTooltip {value}'"
+                        residueClass = f"class='sequenceResidue {value}'"
                         break
-                residueLines += f"<span {residueClass}>{residue}<span class='residueTooltipText'>{one_to_three(residue)}{resNumber}</span></span>"
+                residueDescription='\n'.join(residueProperties[residue])
+                residueLines += f"<span {residueClass}>{residue}<span class='sequenceResidueTooltip'>{one_to_three(residue)}{resNumber}<div class='sequenceResidueTooltipDescription'>{residueDescription}</div></span></span>"
                 resNumber += 1
             residueLines += "</code>\n"
 

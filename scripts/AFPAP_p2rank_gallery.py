@@ -55,9 +55,9 @@ def generatePocketGallery():
     with open('config/pocketViewer_template.html', 'r') as template:
         templateData = template.read()
         colors = createSpectrum(df.shape[0], 0.6, 0.6, 1.2)
-        pocketDescription = "<span style=\"width: 100%;display: inline-flex;justify-content: center;flex-wrap: wrap;\">"
+        pocketDescription = "<span class=\"pocketDescription\">"
         for i in range(df.shape[0]):
-            pocketDescription += f"<span style=\"padding: 0 5px;\">Pocket{i+1}<span style=\"color:rgb({colors[i][0]*255},{colors[i][1]*255},{colors[i][2]*255});font-size:16px\">&#11044</span></span>\t "
+            pocketDescription += f"<span class=\"pocketDescriptionSpan\">Pocket{i+1}<span class=\"pocketDescriptionBullet\" style=\"color:rgb({colors[i][0]*255},{colors[i][1]*255},{colors[i][2]*255});\">&#11044</span></span>\t "
         pocketDescription += "</span>"
         templateData = templateData.replace(
             "--pocketColors--", pocketDescription)

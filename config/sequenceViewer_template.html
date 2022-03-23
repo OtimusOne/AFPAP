@@ -3,8 +3,99 @@ parent_id: sequence_analysis
 parent_name: 'Sequence Analysis'
 parent_description: ''
 id: 'protein_sequence'
-description: 'Lesk residue colour scheme: Small nonpolar - <span style="color: rgb(255, 166, 133);">Orange</span>, Hydrophobic - <span style="color: rgb(21, 255, 21);">Green</span>, Polar - <span style="color: magenta;">Magenta</span>, Negatively charged - <span style="color: rgb(255, 67, 67);">Red</span>, Positively charged - <span style="color: rgb(98, 163, 255);">Blue</span>'
+description: ''
 -->
 <div class='code-parent'>
-<pre class='codes'>--sequence--</pre>
+    <p>
+        <span>Colour scheme:</span>
+        <select class="form-select" id="sequenceColorScheme" onchange="colorSchemeChange()">
+            <option value="None">None</option>
+            <option selected value="Lesk">Lesk</option>
+            <option value="Clustal">Clustal</option>
+            <option value="MAEditor">MAEditor</option>
+            <option value="CINEMA">CINEMA</option>
+        </select>
+    </p>
+    <pre class='codes'>--sequence--</pre>
 </div>
+<script>
+    function colorSchemeChange() {
+        var LeskScheme = {
+            "GAST": "LeskSmallNonpolar",
+            "CVILPFYMW": "LeskHydrophobic",
+            "NQH": "LeskPolar",
+            "DE": "LeskNegativeCharge",
+            "KR": "LeskPositiveCharge",
+        };
+        var ClustalScheme = {
+            "GPST": "ClustalOrange",
+            "HKR": "ClustalRed",
+            "FWY": "ClustalBlue",
+            "ILMV": "ClustalGreen",
+        };
+        var MAEditorScheme = {
+            "AG": "MAEditorLightGreen",
+            "C": "MAEditorGreen",
+            "DENQ": "MAEditorDarkGreen",
+            "ILMV": "MAEditorBlue",
+            "FWY": "MAEditorLiliac",
+            "H": "MAEditorDarkBlue",
+            "KR": "MAEditorOrange",
+            "P": "MAEditorPink",
+            "ST": "MAEditorRed",
+        };
+        var CinemaScheme = {
+            "HKR": "CinemaBlue",
+            "DE": "CinemaRed",
+            "STNQ": "CinemaGreen",
+            "AVLIM": "CinemaWhite",
+            "FWY": "CinemaMagenta",
+            "PG": "CinemaBrown",
+            "C": "CinemaYellow",
+            "BZX-": "CinemaGrey",
+        };
+        var select = document.getElementById("sequenceColorScheme").value;
+        var x = document.getElementsByClassName("sequenceResidue");
+        for (i = 0; i < x.length; i++) {
+            var residue = x[i].innerText;
+            var newClasses = "sequenceResidue "
+            switch (select) {
+                case "Lesk":
+                    for (let key in LeskScheme) {
+                        if (key.includes(residue)) {
+                            newClasses += LeskScheme[key];
+                            break;
+                        }
+                    }
+                    break;
+                case "Clustal":
+                    for (let key in ClustalScheme) {
+                        if (key.includes(residue)) {
+                            newClasses += ClustalScheme[key];
+                            break;
+                        }
+                    }
+                    break;
+                case "MAEditor":
+                    for (let key in MAEditorScheme) {
+                        if (key.includes(residue)) {
+                            newClasses += MAEditorScheme[key];
+                            break;
+                        }
+                    }
+                    break;
+                case "CINEMA":
+                    for (let key in CinemaScheme) {
+                        if (key.includes(residue)) {
+                            newClasses += CinemaScheme[key];
+                            break;
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+            x[i].className = newClasses;
+        }
+    }
+</script>

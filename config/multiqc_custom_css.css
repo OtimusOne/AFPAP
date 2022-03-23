@@ -1,6 +1,8 @@
+/* Sequence viewer */
 div.code-parent {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 pre.codes {
@@ -27,58 +29,146 @@ pre.codes code::before {
   font-size: 60%;
 }
 
-div#icn3dwrap * {
-  box-sizing: content-box;
-  -webkit-box-sizing: content-box;
-  line-height: normal;
+/* Lesk */
+.codes .LeskSmallNonpolar {
+  background-color: rgb(255, 165, 0);
 }
 
-.codes .smallNonpolar {
-  background-color: rgb(255, 166, 133);
+.codes .LeskHydrophobic {
+  background-color: rgb(153, 238, 102);
 }
 
-.codes .hydrophobic {
-  background-color: rgb(21, 255, 21);
-}
-
-.codes .polar {
+.codes .LeskPolar {
   background-color: magenta;
 }
 
-.codes .negativeCharge {
+.codes .LeskNegativeCharge {
   background-color: rgb(255, 67, 67);
 }
 
-.codes .positiveCharge {
-  background-color: rgb(98, 163, 255);
+.codes .LeskPositiveCharge {
+  background-color: rgb(102, 187, 255);
 }
 
-.residueTooltip {
+
+/* Clustal */
+.codes .ClustalOrange {
+  background-color: rgb(255, 165, 0);
+}
+
+.codes .ClustalRed {
+  background-color: rgb(255, 67, 67);
+}
+
+.codes .ClustalBlue {
+  background-color: rgb(102, 187, 255);
+}
+
+.codes .ClustalGreen {
+  background-color: rgb(153, 238, 102);
+}
+
+/* MAEditor */
+.codes .MAEditorLightGreen {
+  background-color: rgb(119, 221, 136);
+}
+
+.codes .MAEditorGreen {
+  background-color: rgb(153, 238, 102);
+}
+
+.codes .MAEditorDarkGreen {
+  background-color: rgb(85, 187, 51);
+}
+
+.codes .MAEditorBlue {
+  background-color: rgb(102, 187, 255);
+}
+
+.codes .MAEditorLiliac {
+  background-color: rgb(153, 153, 255);
+}
+
+.codes .MAEditorDarkBlue {
+  background-color: rgb(85, 85, 255);
+}
+
+.codes .MAEditorOrange {
+  background-color: rgb(255, 204, 119);
+}
+
+.codes .MAEditorPink {
+  background-color: rgb(238, 170, 170);
+}
+
+.codes .MAEditorRed {
+  background-color: rgb(255, 68, 85);
+}
+
+/* CINEMA */
+.codes .CinemaBlue {
+  background-color: rgb(0, 255, 255);
+}
+
+.codes .CinemaRed {
+  background-color: rgb(255, 0, 0);
+}
+
+.codes .CinemaGreen {
+  background-color: rgb(0, 255, 0);
+}
+
+.codes .CinemaWhite {
+  background-color: rgb(190, 190, 190);
+}
+
+.codes .CinemaMagenta {
+  background-color: rgb(255, 0, 255);
+}
+
+.codes .CinemaBrown {
+  background-color: rgb(167, 115, 12);
+}
+
+.codes .CinemaYellow {
+  background-color: rgb(255, 255, 0);
+}
+
+.codes .CinemaGrey {
+  background-color: rgb(99, 96, 96);
+}
+
+
+.sequenceResidue {
   position: relative;
   display: inline-block;
   margin: 0.5px;
   padding: 0 3px 0 3px;
-  font-size: 110%;
+  font-size: 105%;
   border-radius: 10px;
 }
 
-.residueTooltip .residueTooltipText {
+.sequenceResidue .sequenceResidueTooltip {
   visibility: hidden;
-  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background-color: #4f4f4f;
   color: #fff;
-  text-align: center;
   border-radius: 6px;
-  padding: 4px 0;
+  padding: 4px 4px;
   position: absolute;
   z-index: 1;
   bottom: 110%;
   left: 50%;
-  margin-left: -40px;
+  margin-left: -55px;
+  width: 110px;
   font-size: 90%;
+  word-break: keep-all;
+  white-space: pre;
 }
 
-.residueTooltip .residueTooltipText::after {
+.sequenceResidue .sequenceResidueTooltip ::after {
   content: "";
   position: absolute;
   top: 100%;
@@ -89,15 +179,38 @@ div#icn3dwrap * {
   border-color: black transparent transparent transparent;
 }
 
-.residueTooltip:hover .residueTooltipText {
+.sequenceResidue:hover .sequenceResidueTooltip {
   visibility: visible;
 }
 
+.sequenceResidueTooltipDescription {
+  width: 100%;
+  font-size: 70%;
+  line-height: 1;
+}
+
+#sequenceColorScheme {
+  font-size: inherit;
+}
+
+
+/* Structure viewer */
+div#icn3dwrap {
+  padding: 20px;
+}
+
+div#icn3dwrap * {
+  box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  line-height: normal;
+}
 
 div#icn3dwrap label {
   font-weight: normal;
 }
 
+
+/* Pocket viewer */
 .pocketGallery {
   display: flex;
   align-items: center;
@@ -118,6 +231,7 @@ div#icn3dwrap label {
 }
 
 .pocketGalleryColumn img {
+  width: 100%;
   opacity: 0.8;
   cursor: pointer;
 }
@@ -126,6 +240,22 @@ div#icn3dwrap label {
   opacity: 1;
 }
 
-#expandedImg{
+.pocketDescription {
+  width: 100%;
+  display: inline-flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 10px 0 0 0;
+}
+
+.pocketDescriptionSpan {
+  padding: 0 5px;
+}
+
+.pocketDescriptionBullet {
+  font-size: 16px;
+}
+
+#expandedImg {
   width: 100%;
 }
