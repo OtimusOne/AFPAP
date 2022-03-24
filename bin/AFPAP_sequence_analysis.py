@@ -8,6 +8,7 @@ from Bio.PDB.Polypeptide import one_to_three
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--input", help="Input file")
+parser.add_argument("--template", help="Template")
 args = parser.parse_args()
 
 residue_atom_count = {
@@ -91,7 +92,7 @@ def section_proteinSequence():
                 resNumber += 1
             residueLines += "</code>\n"
 
-        with open('config/sequenceViewer_template.html', 'r') as template:
+        with open(args.template, 'r') as template:
             templateData = template.read()
             templateData = templateData.replace("--sequence--", residueLines)
             print(templateData, file=f)

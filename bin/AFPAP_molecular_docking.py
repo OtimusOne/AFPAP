@@ -8,6 +8,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-r", "--receptor", help="Receptor")
 parser.add_argument("-l", "--ligand", help="Ligand")
 parser.add_argument("-n", "--name", help="Ligand name")
+parser.add_argument("-e", "--exhaustiveness", help="Exhaustiveness")
+parser.add_argument("--template", help="Template")
 args = parser.parse_args()
 
 
@@ -43,8 +45,8 @@ def wideBox(structureFile):
 
 
 with open(f'./output/work/molecular_docking_{args.name}_mqc.txt', 'w') as f:
-    with open('config/molecularDocking_template.txt', 'r') as template:
-        exh = 32
+    with open(args.template, 'r') as template:
+        exh = int(args.exhaustiveness)
         templateData = template.read()
         templateData = templateData.replace('--ligand--', args.name)
         print(templateData, file=f)

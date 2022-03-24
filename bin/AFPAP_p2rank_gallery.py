@@ -1,9 +1,14 @@
+import argparse
 import base64
 from turtle import color
 from PIL import Image, ImageChops
 import colorsys
 import pandas as pd
 
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--template", help="Template")
+args = parser.parse_args()
 
 def createSpectrum(numColors,  sat,  hueMin,  hueMax):
     table = [0]*numColors
@@ -52,7 +57,7 @@ def generatePocketGallery():
         im = trim(im)
         im.save(cropPath, "PNG")
 
-    with open('config/pocketViewer_template.html', 'r') as template:
+    with open(args.template, 'r') as template:
         templateData = template.read()
         colors = createSpectrum(df.shape[0], 0.6, 0.6, 1.2)
         pocketDescription = "<span class=\"pocketDescription\">"

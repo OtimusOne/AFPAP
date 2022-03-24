@@ -4,10 +4,11 @@ import pandas as pd
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--pymol_script", help="PyMol script")
 parser.add_argument("-c", "--csv", help="CSV")
+parser.add_argument("--template", help="Template")
 args = parser.parse_args()
 
 with open(args.pymol_script, 'a') as file:
-    with open("config/pymol.pml", 'r') as pymol:
+    with open(args.template, 'r') as pymol:
         pymolData = pymol.read()
         file.write(pymolData)
 
