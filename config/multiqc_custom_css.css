@@ -259,3 +259,116 @@ div#icn3dwrap label {
 #expandedImg {
   width: 100%;
 }
+
+/* Evolutionary anaysis */
+#pfam-table th {
+  text-align: center;
+  vertical-align: middle;
+  border: 1px solid #ddd;
+  border-bottom: 2px solid #ddd;
+}
+
+#pfam-table tr {
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+
+#pfam-table td {
+  border: 0;
+  vertical-align: middle;
+}
+
+#pfam-table .pfam-row1 {
+  text-align: center;
+}
+
+#pfam-table .pfam-row2 {
+  border-bottom: 1px solid #ddd;
+}
+
+#pfam-table .alignmentButton {
+  font-size: 12px;
+}
+
+#pfam-table .alignmentContainer {
+  font-size: 13px;
+  font-family: monospace;
+}
+
+
+/* PP heatmap */
+#pfam-table .pp0 {
+  background-color: #ff0000;
+  color: #000;
+}
+
+#pfam-table .pp1 {
+  background-color: #fe4000;
+  color: #000;
+}
+
+#pfam-table .pp2 {
+  background-color: #f96000;
+  color: #000;
+}
+
+#pfam-table .pp3 {
+  background-color: #f17a00;
+  color: #000;
+}
+
+#pfam-table .pp4 {
+  background-color: #e69100;
+  color: #000;
+}
+
+#pfam-table .pp5 {
+  background-color: #d7a600;
+  color: #000;
+}
+
+#pfam-table .pp6 {
+  background-color: #c5ba00;
+  color: #000;
+}
+
+#pfam-table .pp7 {
+  background-color: #aecd00;
+  color: #000;
+}
+
+#pfam-table .pp8 {
+  background-color: #92df00;
+  color: #000;
+}
+
+#pfam-table .pp9 {
+  background-color: #6bef00;
+  color: #000;
+}
+
+#pfam-table .ppstar {
+  background-color: #0cff00;
+  color: #000;
+}
+
+#pfam-table .ppgap {
+  background-color: #eee;
+  color: #000;
+}
+
+/* HMM match heatmap */
+#pfam-table .hmmmatch {
+  background-color: #00ff36;
+  color: #000;
+}
+
+#pfam-table .hmmplus {
+  background-color: #00e1f4;
+  color: #000;
+}
+
+#pfam-table .hmmminus {
+  background-color: #dddddd;
+  color: #000;
+}

@@ -52,12 +52,14 @@ with open(f'./output/work/molecular_docking_{args.name}_mqc.txt', 'w') as f:
         print(templateData, file=f)
         df = pd.read_csv("./output/work/p2rank_predictions.csv")
         for i, row in df.iterrows():
+            print(f"Docking pocket {i+1}/{df.shape[0]}...")
             bestScore, meanScore, stdScore = dock(receptor=args.receptor, ligand=args.ligand, center=[
                                                   row['Center X'], row['Center Y'], row['Center Z']], box_size=[20, 20, 20], spacing=0.375, exhaustiveness=exh)
             print(row['Name'], bestScore, f"{meanScore} \u00B1 {stdScore}",
                   f"{np.round(row['Center X'],2)},{np.round(row['Center Y'],2)},{np.round(row['Center Z'],2)}", "20,20,20", 0.375, exh, sep='\t', file=f)
-        center_x, box_x, center_y, box_y, center_z, box_z = wideBox(
-            args.receptor)
+        
+        print("Blind docking...")
+        center_x, box_x, center_y, box_y, center_z, box_z = wideBox(args.receptor)
         bestScore, meanScore, stdScore = dock(receptor=args.receptor, ligand=args.ligand, center=[
                                               center_x, center_y, center_z], box_size=[box_x, box_y, box_z], spacing=1, exhaustiveness=exh)
         print('Wide Box', bestScore, f"{meanScore} \u00B1 {stdScore}", f"{np.round(center_x,2)},{np.round(center_y,2)},{np.round(center_z,2)}",

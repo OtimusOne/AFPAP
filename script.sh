@@ -26,6 +26,7 @@ mkdir -p output/work/docking
 python "$AFPAP_PATH/bin/AFPAP_sequence_analysis.py" -i $inputFile --template "$AFPAP_PATH/config/sequenceViewer_template.html"
 
 pfam_scan.pl -clan_overlap -align -json pretty -fasta $inputFile -dir $Pfam_PATH > ./output/work/pfam.json
+python "$AFPAP_PATH/bin/AFPAP_pfam.py" -j output/work/pfam.json --template "$AFPAP_PATH/config/pfam_template.html"
 
 python "$AFPAP_PATH/bin/AFPAP_secondary_structure.py" -i $pdbFile
 python "$AFPAP_PATH/bin/AFPAP_structure_analysis.py" -i ./output/work/proteinStructure_ss.pdb --template "$AFPAP_PATH/config/pdbViewer_template.html"
