@@ -9,9 +9,10 @@ AlphaFold-based Protein Analysis Pipeline
     https://github.com/rdk/p2rank
 3. ADFR suite - MSMS not required
     https://ccsb.scripps.edu/adfr/downloads/
-4. AFPAP
+4. Pfam database(Pfam-A.hmm) http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/
+5. AFPAP
 ```
-conda install -c conda-forge -c anaconda -c bioconda numpy pandas biopython multiqc pymol-open-source pillow
+conda install -c conda-forge -c anaconda -c bioconda numpy pandas biopython multiqc pymol-open-source pillow pfam_scan perl-json
 pip install vina
 sudo apt-get install dssp
 ```

@@ -44,23 +44,23 @@ with open(args.json, 'r') as json_file:
     if len(pfam_data) == 0:
         pfam_table += '<tr class="pfam-row2"><td colspan="14">No match found!</td></tr>'
     else:
-
         for recordID, record in enumerate(pfam_data):
             alignment_table = ""
             alignment_match = []
             alignment_section = 150
             matchLength = len(record["align"][0][11:])
+            matchMaxPosition = max(int(record["hmm"]["to"]),int(record["seq"]["to"]))
             for i in range(0, matchLength, alignment_section):
                 alignment_match.append([record["align"][0][11+i:11+i+alignment_section], record["align"][1][11+i:11+i +
                                                                                                             alignment_section], record["align"][2][11+i:11+i+alignment_section], record["align"][3][11+i:11+i+alignment_section]])
             for i, match in enumerate(alignment_match):
-                alignment_table += f'#HMM    {prependWhitespace(str(int(record["hmm"]["from"])+i*alignment_section),len(str(matchLength)))} '.replace(
+                alignment_table += f'#HMM    {prependWhitespace(str(int(record["hmm"]["from"])+i*alignment_section),len(str(matchMaxPosition)))} '.replace(
                     ' ', "&nbsp")+f'<span class="hmmMODEL">{createHmmRow(match[0],match[1])}</span><br>\n'
-                alignment_table += f'#MATCH  {prependWhitespace("",len(str(matchLength)))} '.replace(
+                alignment_table += f'#MATCH  {prependWhitespace("",len(str(matchMaxPosition)))} '.replace(
                     ' ', "&nbsp")+f'<span class="hmmMATCH">{match[1].replace(" ","&nbsp")}</span><br>\n'
-                alignment_table += f'#PP     {prependWhitespace("",len(str(matchLength)))} '.replace(
+                alignment_table += f'#PP     {prependWhitespace("",len(str(matchMaxPosition)))} '.replace(
                     ' ', "&nbsp")+f'<span class="hmmPP">{match[2]}</span><br>\n'
-                alignment_table += f'#SEQ    {prependWhitespace(str(int(record["seq"]["from"])+i*alignment_section),len(str(matchLength)))} '.replace(
+                alignment_table += f'#SEQ    {prependWhitespace(str(int(record["seq"]["from"])+i*alignment_section),len(str(matchMaxPosition)))} '.replace(
                     ' ', "&nbsp")+f'<span class="hmmSEQ">{createSeqRow(match[3],match[2])}</span><br><br>\n'
 
             pfam_table += f"""<tr class="pfam-row1">
