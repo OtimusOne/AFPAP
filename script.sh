@@ -32,26 +32,31 @@ pfam_scan.pl -clan_overlap -align -json pretty -fasta $inputFile -dir $Pfam_PATH
 python "$AFPAP_PATH/bin/AFPAP_pfam.py" -j "$outputDir/work/pfam.json" -o $outputDir --AFPAPpath $AFPAP_PATH
 
 python "$AFPAP_PATH/bin/AFPAP_secondary_structure.py" -i $pdbFile -o $outputDir --AFPAPpath $AFPAP_PATH
-python "$AFPAP_PATH/bin/AFPAP_structure_analysis.py" -i "$outputDir/work/proteinStructure_ss.pdb" -o $outputDir --AFPAPpath $AFPAP_PATH
+python "$AFPAP_PATH/bin/AFPAP_structure_analysis.py" -i "$outputDir/work/proteinStructure.pdb" -o $outputDir --AFPAPpath $AFPAP_PATH
 
-prank predict -f "$outputDir/work/proteinStructure_ss.pdb" -o "$outputDir/work" -c alphafold
+prank predict -f "$outputDir/work/proteinStructure.pdb" -o "$outputDir/work" -c alphafold
 
-python "$AFPAP_PATH/bin/AFPAP_p2rank_visualization.py" -p "$outputDir/work/visualizations/proteinStructure_ss.pdb.pml" -c "$outputDir/work/proteinStructure_ss.pdb_predictions.csv" -o $outputDir --AFPAPpath $AFPAP_PATH
+python "$AFPAP_PATH/bin/AFPAP_p2rank_visualization.py" -p "$outputDir/work/visualizations/proteinStructure.pdb.pml" -c "$outputDir/work/proteinStructure.pdb_predictions.csv" -o $outputDir --AFPAPpath $AFPAP_PATH
 
 cd "$outputDir/work/visualizations"
-pymol -cq proteinStructure_ss.pdb.pml
+pymol -cq proteinStructure.pdb.pml
 cd $baseDir
 python "$AFPAP_PATH/bin/AFPAP_p2rank_gallery.py"  -o $outputDir --AFPAPpath $AFPAP_PATH 
 
 if [ -f "$ligandFile" ] ; then
-    cp "$outputDir/work/proteinStructure_ss.pdb" "$outputDir/work/docking/receptor.pdb"
-    ligand_base_name=$(basename ${ligandFile})    
+    cp "$outputDir/work/proteinStructure.pdb" "$outputDir/work/docking/receptor.pdb"
+    ligand_name=$(basename ${ligandFile})
+    ligand_base_name="${ligand_name%.*}"    
     cp $ligandFile "$outputDir/work/docking/"
     cd "$outputDir/work/docking"
     prepare_receptor -r receptor.pdb -o receptor.pdbqt -A "hydrogens"
-    prepare_ligand -l "$outputDir/work/docking/$ligand_base_name" -o ligand.pdbqt
+    mkdir -p $ligand_base_name
+    prepare_ligand -l "$outputDir/work/docking/$ligand_name" -o "$ligand_base_name/$ligand_base_name.pdbqt"
     cd $baseDir
-    python "$AFPAP_PATH/bin/AFPAP_molecular_docking.py" -r "$outputDir/work/docking/receptor.pdbqt" -l "$outputDir/work/docking/ligand.pdbqt" -n $ligand_base_name -e $md_exhaustiveness -o $outputDir --AFPAPpath $AFPAP_PATH
+    python "$AFPAP_PATH/bin/AFPAP_molecular_docking.py" -r "$outputDir/work/docking/receptor.pdbqt" -l "$outputDir/work/docking/$ligand_base_name/$ligand_base_name.pdbqt" -n $ligand_base_name -e $md_exhaustiveness -o $outputDir --AFPAPpath $AFPAP_PATH
+    cd "$outputDir/work/docking"
+    pymol -cq generate_complex.pml
+    cd $baseDir
 fi
 
 multiqc -f -c "$AFPAP_PATH/config/multiqc_config.yaml" --custom-css-file "$AFPAP_PATH/config/multiqc_custom_css.css" -o $outputDir $outputDir

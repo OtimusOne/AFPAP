@@ -23,7 +23,7 @@ pymol -cq
 
 ./script.sh -i input/RBP4.fasta -p input/RBP4.pdb -l input/RTL.mol2 
 
-
+ ./script.sh -i input/FABPH.fasta -p input/FABPH.pdb -l input/OLA.mol2 
 
 
 
@@ -55,3 +55,10 @@ conda install -c bioconda pfam_scan perl-json
 conda install -y -c bioconda hmmer==3.3.2 hhsuite==3.3.0 kalign2==2.04
 
 pfam_scan.pl -clan_overlap -align -json pretty -fasta ../AFPAP/input/RBP4.fasta -dir . > o4.txt
+
+
+
+
+
+
+conda install openbabel -c conda-forge

@@ -66,7 +66,7 @@ def main():
 
     with open(args.input, 'r') as pdbFile:
         pdbData = pdbFile.read()
-        with open(f"{args.outputDir}/work/proteinStructure_ss.pdb", 'w') as f:
+        with open(f"{args.outputDir}/work/proteinStructure.pdb", 'w') as f:
 
             if pdbData.find("HELIX") == -1 and pdbData.find("SHEET") == -1:
 

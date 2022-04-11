@@ -75,7 +75,10 @@ def main():
             templateData = template.read()
             templateData = templateData.replace('--ligand--', args.name)
             print(templateData, file=f)
-            df = pd.read_csv(f"{args.outputDir}/work/p2rank_predictions.csv")
+
+        df = pd.read_csv(f"{args.outputDir}/work/p2rank_predictions.csv")
+        with open(f'{args.outputDir}/work/docking/generate_complex.pml', 'a') as pml:
+            print("set retain_order\nset pdb_retain_ids",file=pml)
             for i, row in df.iterrows():
                 logging.info(f"Docking pocket {i+1}/{df.shape[0]}...")
 
@@ -86,26 +89,31 @@ def main():
                 bestScore, meanScore, stdScore = np.round(energies[0], 4), np.round(
                     np.mean(energies), 4), np.round(np.std(energies), 4)
                 vinaObject.write_poses(
-                    f"{args.outputDir}/work/docking/ADV_{args.name}_pocket{i+1}_bestPose.pdbqt", overwrite=True, n_poses=1)
+                    f"{args.outputDir}/work/docking/{args.name}/{args.name}_pocket{i+1}_bestPose.pdbqt", overwrite=True, n_poses=1)
                 vinaObject.write_poses(
-                    f"{args.outputDir}/work/docking/ADV_{args.name}_pocket{i+1}.pdbqt", overwrite=True)
+                    f"{args.outputDir}/work/docking/{args.name}/{args.name}_pocket{i+1}.pdbqt", overwrite=True)
+                print(f'load "{args.name}/{args.name}_pocket{i+1}_bestPose.pdbqt", ligand', file=pml)
+                print('load "receptor.pdbqt", receptor', file=pml)
+                print(f'save {args.name}/Complex{i+1}.pdb, state=1', file=pml)
+                print('delete all', file=pml)
+
                 print(row['Name'], bestScore, f"{meanScore} \u00B1 {stdScore}",
                       f"{np.round(row['Center X'],2)},{np.round(row['Center Y'],2)},{np.round(row['Center Z'],2)}", "20,20,20", 0.375, exh, sep='\t', file=f)
 
-            logging.info("Blind docking...")
-            center_x, box_x, center_y, box_y, center_z, box_z = wideBox(
-                args.receptor)
-            vinaObject = dock(receptor=args.receptor, ligand=args.ligand, center=[
-                center_x, center_y, center_z], box_size=[box_x, box_y, box_z], spacing=1, exhaustiveness=exh)
-            energies = vinaObject.energies()[:, 0]
-            bestScore, meanScore, stdScore = np.round(energies[0], 4), np.round(
-                np.mean(energies), 4), np.round(np.std(energies), 4)
-            vinaObject.write_poses(
-                f"{args.outputDir}/work/docking/ADV_{args.name}_blindDocking_bestPose.pdbqt", overwrite=True, n_poses=1)
-            vinaObject.write_poses(
-                f"{args.outputDir}/work/docking/ADV_{args.name}_blindDocking.pdbqt", overwrite=True)
-            print('Wide Box', bestScore, f"{meanScore} \u00B1 {stdScore}", f"{np.round(center_x,2)},{np.round(center_y,2)},{np.round(center_z,2)}",
-                  f"{int(box_x)},{int(box_y)},{int(box_z)}", 1, exh, sep='\t', file=f)
+        logging.info("Blind docking...")
+        center_x, box_x, center_y, box_y, center_z, box_z = wideBox(
+            args.receptor)
+        vinaObject = dock(receptor=args.receptor, ligand=args.ligand, center=[
+            center_x, center_y, center_z], box_size=[box_x, box_y, box_z], spacing=1, exhaustiveness=exh)
+        energies = vinaObject.energies()[:, 0]
+        bestScore, meanScore, stdScore = np.round(energies[0], 4), np.round(
+            np.mean(energies), 4), np.round(np.std(energies), 4)
+        vinaObject.write_poses(
+            f"{args.outputDir}/work/docking/{args.name}/{args.name}_blindDocking_bestPose.pdbqt", overwrite=True, n_poses=1)
+        vinaObject.write_poses(
+            f"{args.outputDir}/work/docking/{args.name}/{args.name}_blindDocking.pdbqt", overwrite=True)
+        print('Wide Box', bestScore, f"{meanScore} \u00B1 {stdScore}", f"{np.round(center_x,2)},{np.round(center_y,2)},{np.round(center_z,2)}",
+              f"{int(box_x)},{int(box_y)},{int(box_z)}", 1, exh, sep='\t', file=f)
 
 
 if __name__ == '__main__':
