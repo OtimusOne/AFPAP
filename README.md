@@ -13,6 +13,7 @@ AlphaFold-based Protein Analysis Pipeline
 5. AFPAP
 ```
 conda install -c conda-forge -c anaconda -c bioconda numpy pandas biopython multiqc pymol-open-source pillow pfam_scan perl-json
+python -m pip install https://github.com/kasperplaneta/SimBa2/archive/main.tar.gz
 pip install vina
 sudo apt-get install dssp
 ```

@@ -64,10 +64,8 @@ def section_proteinSequence(protein_sequence, args):
 def section_sequenceProperties(protein_sequence, protParam, atomCount, args):
     with open(f'{args.outputDir}/work/multiqc_files/seq_stats.txt', 'w') as f:
 
-        negativeCharge = protein_sequence.count(
-            'D')+protein_sequence.count('E')
-        positiveCharge = protein_sequence.count(
-            'R')+protein_sequence.count('K')
+        negativeCharge = protein_sequence.count('D')+protein_sequence.count('E')
+        positiveCharge = protein_sequence.count('R')+protein_sequence.count('K')
         print("Input", "Molecular weight", "Atoms", "Aromaticity", "Instability index", "Isoelctric point",
               "Extinction coefficients", "GRAVY", "Negatively charged residues", "Positively charged residues",  sep='\t', file=f)
         print(os.path.basename(args.input), protParam.molecular_weight(), atomCount["C"]+atomCount["H"]+atomCount["N"]+atomCount["O"]+atomCount["S"], protParam.aromaticity(), protParam.instability_index(), protParam.isoelectric_point(
@@ -76,7 +74,6 @@ def section_sequenceProperties(protein_sequence, protParam, atomCount, args):
 
 def section_sequenceFlexibility(protein_sequence, protParam, args, scaleWindow=9):
     with open(f'{args.outputDir}/work/multiqc_files/seq_stats_flex.txt', 'w') as f:
-
         for x, y in zip([x for x in range(1, len(protein_sequence)+1)], protParam.protein_scale(window=scaleWindow, param_dict=ProtParamData.Flex)):
             print(f"{x+scaleWindow//2}\t{y}", file=f)
 
@@ -95,7 +92,6 @@ def section_sequencePH(protParam, args):
 
 def section_atomCount(atomCount, args):
     with open(f'{args.outputDir}/work/multiqc_files/seq_stats_atomcount.txt', 'w') as f:
-
         print("Atom", end="\t", file=f)
         for x in atomCount:
             print(x, end="\t", file=f)
@@ -119,20 +115,16 @@ def section_residueCount(AAdict, args):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-v', '--verbosity', action="count",
-                        help="verbosity")
-    parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output",
-                        help="Output Directory")
-    parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True,
-                        help="Path to AFPAP home")
+    parser.add_argument('-v', '--verbosity', action="count", help="verbosity")
+    parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output", help="Output Directory")
+    parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True, help="Path to AFPAP home")
     parser.add_argument("-i", "--input", help="Input file", required=True)
 
     args = parser.parse_args()
 
     consoleLogger = logging.StreamHandler()
     consoleLogger.setLevel(logging.INFO if args.verbosity else logging.ERROR)
-    fileLogger = logging.FileHandler(
-        f"{args.outputDir}/workflow.log", mode='a')
+    fileLogger = logging.FileHandler(f"{args.outputDir}/workflow.log", mode='a')
     fileLogger.setLevel(logging.INFO)
     logging.basicConfig(
         level=logging.INFO,

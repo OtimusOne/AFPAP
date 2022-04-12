@@ -66,14 +66,12 @@ def generatePocketGallery(args):
         for i in range(df.shape[0]):
             pocketDescription += f"<span class=\"pocketDescriptionSpan\">Pocket{i+1}<span class=\"pocketDescriptionBullet\" style=\"color:rgb({colors[i][0]*255},{colors[i][1]*255},{colors[i][2]*255});\">&#11044</span></span>\t "
         pocketDescription += "</span>"
-        templateData = templateData.replace(
-            "--pocketColors--", pocketDescription)
+        templateData = templateData.replace("--pocketColors--", pocketDescription)
 
         for x, img in enumerate(pocketImagesCrop):
             with open(f'{args.outputDir}/work/visualizations/{img}', "rb") as image_file:
                 imgData = base64.b64encode(image_file.read())
-                templateData = templateData.replace(
-                    f"--pocket{x+1}--", imgData.decode('utf-8'))
+                templateData = templateData.replace(f"--pocket{x+1}--", imgData.decode('utf-8'))
 
         with open(f"{args.outputDir}/work/multiqc_files/p2rank_viewer_mqc.html", 'w') as f:
             f.write(templateData)
@@ -81,18 +79,14 @@ def generatePocketGallery(args):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-v', '--verbosity', action="count",
-                        help="verbosity")
-    parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output",
-                        help="Output Directory")
-    parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True,
-                        help="Path to AFPAP home")
+    parser.add_argument('-v', '--verbosity', action="count", help="verbosity")
+    parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output", help="Output Directory")
+    parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True, help="Path to AFPAP home")
 
     args = parser.parse_args()
     consoleLogger = logging.StreamHandler()
     consoleLogger.setLevel(logging.INFO if args.verbosity else logging.ERROR)
-    fileLogger = logging.FileHandler(
-        f"{args.outputDir}/workflow.log", mode='a')
+    fileLogger = logging.FileHandler(f"{args.outputDir}/workflow.log", mode='a')
     fileLogger.setLevel(logging.INFO)
     logging.basicConfig(
         level=logging.INFO,

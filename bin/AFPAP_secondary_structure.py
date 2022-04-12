@@ -37,22 +37,17 @@ def get_dssp_df(model, pdb_file):
     return df
 
 
-
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-v', '--verbosity', action="count",
-                        help="verbosity")
-    parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output",
-                        help="Output Directory")
-    parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True,
-                        help="Path to AFPAP home")
+    parser.add_argument('-v', '--verbosity', action="count", help="verbosity")
+    parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output", help="Output Directory")
+    parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True,  help="Path to AFPAP home")
     parser.add_argument("-i", "--input", help="Input file")
 
     args = parser.parse_args()
     consoleLogger = logging.StreamHandler()
     consoleLogger.setLevel(logging.INFO if args.verbosity else logging.ERROR)
-    fileLogger = logging.FileHandler(
-        f"{args.outputDir}/workflow.log", mode='a')
+    fileLogger = logging.FileHandler(f"{args.outputDir}/workflow.log", mode='a')
     fileLogger.setLevel(logging.INFO)
     logging.basicConfig(
         level=logging.INFO,
@@ -69,7 +64,6 @@ def main():
         with open(f"{args.outputDir}/work/proteinStructure.pdb", 'w') as f:
 
             if pdbData.find("HELIX") == -1 and pdbData.find("SHEET") == -1:
-
                 p = PDBParser()
                 structure = p.get_structure("APLHA", args.input)
                 model = structure[0]
@@ -111,8 +105,6 @@ def main():
 
             else:
                 print(pdbData, file=f)
-
-
 
 
 if __name__ == '__main__':

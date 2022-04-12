@@ -1,0 +1,42 @@
+<!--
+parent_id: structure_analysis
+parent_name: 'Structure Analysis'
+parent_description: ''
+id: 'mutations'
+section_name: 'Protein Stability'
+description: ' Predicted stability changes (ΔΔG, kcal/mol) for all possible single point mutations. Negative values signify destabilizing mutations.'
+-->
+<h4>SimBa-IB</h4>
+<div class="mutationContainer">
+    <table class="table mutationTable">
+        <thead>
+            <tr>
+                <th>Residue</th>
+                ---tableHeader---
+            </tr>
+        </thead>
+        <tbody>
+            ---tableSimBaIB---
+        </tbody>
+    </table>
+</div>
+<br>
+<h4>SimBa-SYM</h4>
+<div class="mutationContainer">
+    <table class="table mutationTable">
+        <thead>
+            <tr>
+                <th>Residue</th>
+                ---tableHeader---
+            </tr>
+        </thead>
+        <tbody>
+            ---tableSimBaSYM---
+        </tbody>
+    </table>
+</div>
+<script>
+    $(document).ready(function(){
+      $('[data-toggle="tooltip"]').tooltip();   
+    });
+</script>

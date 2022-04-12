@@ -9,20 +9,16 @@ import pathlib
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-v', '--verbosity', action="count",
-                        help="verbosity")
-    parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output",
-                        help="Output Directory")
-    parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True,
-                        help="Path to AFPAP home")
+    parser.add_argument('-v', '--verbosity', action="count", help="verbosity")
+    parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output", help="Output Directory")
+    parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True, help="Path to AFPAP home")
     parser.add_argument("-i", "--input", help="Input file")
 
     args = parser.parse_args()
 
     consoleLogger = logging.StreamHandler()
     consoleLogger.setLevel(logging.INFO if args.verbosity else logging.ERROR)
-    fileLogger = logging.FileHandler(
-        f"{args.outputDir}/workflow.log", mode='a')
+    fileLogger = logging.FileHandler(f"{args.outputDir}/workflow.log", mode='a')
     fileLogger.setLevel(logging.INFO)
     logging.basicConfig(
         level=logging.INFO,

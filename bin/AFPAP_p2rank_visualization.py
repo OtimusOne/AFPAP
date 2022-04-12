@@ -10,20 +10,16 @@ import pandas as pd
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-v', '--verbosity', action="count",
-                        help="verbosity")
-    parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output",
-                        help="Output Directory")
-    parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True,
-                        help="Path to AFPAP home")
+    parser.add_argument('-v', '--verbosity', action="count", help="verbosity")
+    parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output", help="Output Directory")
+    parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True,    help="Path to AFPAP home")
     parser.add_argument("-p", "--pymol_script", help="PyMol script")
     parser.add_argument("-c", "--csv", help="CSV")
 
     args = parser.parse_args()
     consoleLogger = logging.StreamHandler()
     consoleLogger.setLevel(logging.INFO if args.verbosity else logging.ERROR)
-    fileLogger = logging.FileHandler(
-        f"{args.outputDir}/workflow.log", mode='a')
+    fileLogger = logging.FileHandler(f"{args.outputDir}/workflow.log", mode='a')
     fileLogger.setLevel(logging.INFO)
     logging.basicConfig(
         level=logging.INFO,
@@ -43,8 +39,7 @@ def main():
     df = df.rename(columns=lambda x: x.strip())
     df = df.drop(["residue_ids", "surf_atom_ids"], axis=1)
     df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
-    df.columns = ["Name", "Rank", "Score", "Probability", "SAS points",
-                  "Surface atoms", "Center X", "Center Y", "Center Z"]
+    df.columns = ["Name", "Rank", "Score", "Probability", "SAS points", "Surface atoms", "Center X", "Center Y", "Center Z"]
     df.to_csv(f"{args.outputDir}/work/p2rank_predictions.csv", index=False)
 
 

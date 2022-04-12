@@ -372,3 +372,21 @@ div#icn3dwrap label {
   background-color: #dddddd;
   color: #000;
 }
+
+/* Mutation Viewer */
+.mutationContainer{
+  overflow-x:auto;
+  width: 95%;
+}
+.mutationTable {
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: 1px solid #ddd;
+}
+.mutationTable th {
+  text-align: center;
+}
+.mutationTable td {
+  text-align: center;
+  font-size: 10px;
+}

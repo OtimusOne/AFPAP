@@ -14,7 +14,6 @@ from Bio.PDB import PDBParser
 def dock(receptor=None, flexible=None, ligand=None, center=[0, 0, 0], box_size=[20, 20, 20], spacing=0.375, exhaustiveness=32, n_poses=20):
     v = Vina(sf_name='vina')
     v.set_receptor(rigid_pdbqt_filename=receptor, flex_pdbqt_filename=flexible)
-
     v.set_ligand_from_file(ligand)
     v.compute_vina_maps(center=center, box_size=box_size, spacing=spacing)
     v.dock(exhaustiveness=exhaustiveness, n_poses=n_poses)
@@ -43,12 +42,9 @@ def wideBox(structureFile):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-v', '--verbosity', action="count",
-                        help="verbosity")
-    parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output",
-                        help="Output Directory")
-    parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True,
-                        help="Path to AFPAP home")
+    parser.add_argument('-v', '--verbosity', action="count", help="verbosity")
+    parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output", help="Output Directory")
+    parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True, help="Path to AFPAP home")
     parser.add_argument("-r", "--receptor", help="Receptor")
     parser.add_argument("-l", "--ligand", help="Ligand")
     parser.add_argument("-n", "--name", help="Ligand name")
@@ -57,8 +53,7 @@ def main():
     args = parser.parse_args()
     consoleLogger = logging.StreamHandler()
     consoleLogger.setLevel(logging.INFO if args.verbosity else logging.ERROR)
-    fileLogger = logging.FileHandler(
-        f"{args.outputDir}/workflow.log", mode='a')
+    fileLogger = logging.FileHandler(f"{args.outputDir}/workflow.log", mode='a')
     fileLogger.setLevel(logging.INFO)
     logging.basicConfig(
         level=logging.INFO,
@@ -78,20 +73,16 @@ def main():
 
         df = pd.read_csv(f"{args.outputDir}/work/p2rank_predictions.csv")
         with open(f'{args.outputDir}/work/docking/generate_complex.pml', 'a') as pml:
-            print("set retain_order\nset pdb_retain_ids",file=pml)
+            print("set retain_order\nset pdb_retain_ids", file=pml)
             for i, row in df.iterrows():
                 logging.info(f"Docking pocket {i+1}/{df.shape[0]}...")
 
-                vinaObject = dock(receptor=args.receptor, ligand=args.ligand, center=[
-                    row['Center X'], row['Center Y'], row['Center Z']], box_size=[20, 20, 20], spacing=0.375, exhaustiveness=exh)
+                vinaObject = dock(receptor=args.receptor, ligand=args.ligand, center=[row['Center X'], row['Center Y'], row['Center Z']], box_size=[20, 20, 20], spacing=0.375, exhaustiveness=exh)
 
                 energies = vinaObject.energies()[:, 0]
-                bestScore, meanScore, stdScore = np.round(energies[0], 4), np.round(
-                    np.mean(energies), 4), np.round(np.std(energies), 4)
-                vinaObject.write_poses(
-                    f"{args.outputDir}/work/docking/{args.name}/{args.name}_pocket{i+1}_bestPose.pdbqt", overwrite=True, n_poses=1)
-                vinaObject.write_poses(
-                    f"{args.outputDir}/work/docking/{args.name}/{args.name}_pocket{i+1}.pdbqt", overwrite=True)
+                bestScore, meanScore, stdScore = np.round(energies[0], 4), np.round(np.mean(energies), 4), np.round(np.std(energies), 4)
+                vinaObject.write_poses(f"{args.outputDir}/work/docking/{args.name}/{args.name}_pocket{i+1}_bestPose.pdbqt", overwrite=True, n_poses=1)
+                vinaObject.write_poses(f"{args.outputDir}/work/docking/{args.name}/{args.name}_pocket{i+1}.pdbqt", overwrite=True)
                 print(f'load "{args.name}/{args.name}_pocket{i+1}_bestPose.pdbqt", ligand', file=pml)
                 print('load "receptor.pdbqt", receptor', file=pml)
                 print(f'save {args.name}/Complex{i+1}.pdb, state=1', file=pml)
@@ -101,17 +92,12 @@ def main():
                       f"{np.round(row['Center X'],2)},{np.round(row['Center Y'],2)},{np.round(row['Center Z'],2)}", "20,20,20", 0.375, exh, sep='\t', file=f)
 
         logging.info("Blind docking...")
-        center_x, box_x, center_y, box_y, center_z, box_z = wideBox(
-            args.receptor)
-        vinaObject = dock(receptor=args.receptor, ligand=args.ligand, center=[
-            center_x, center_y, center_z], box_size=[box_x, box_y, box_z], spacing=1, exhaustiveness=exh)
+        center_x, box_x, center_y, box_y, center_z, box_z = wideBox(args.receptor)
+        vinaObject = dock(receptor=args.receptor, ligand=args.ligand, center=[center_x, center_y, center_z], box_size=[box_x, box_y, box_z], spacing=1, exhaustiveness=exh)
         energies = vinaObject.energies()[:, 0]
-        bestScore, meanScore, stdScore = np.round(energies[0], 4), np.round(
-            np.mean(energies), 4), np.round(np.std(energies), 4)
-        vinaObject.write_poses(
-            f"{args.outputDir}/work/docking/{args.name}/{args.name}_blindDocking_bestPose.pdbqt", overwrite=True, n_poses=1)
-        vinaObject.write_poses(
-            f"{args.outputDir}/work/docking/{args.name}/{args.name}_blindDocking.pdbqt", overwrite=True)
+        bestScore, meanScore, stdScore = np.round(energies[0], 4), np.round(np.mean(energies), 4), np.round(np.std(energies), 4)
+        vinaObject.write_poses(f"{args.outputDir}/work/docking/{args.name}/{args.name}_blindDocking_bestPose.pdbqt", overwrite=True, n_poses=1)
+        vinaObject.write_poses(f"{args.outputDir}/work/docking/{args.name}/{args.name}_blindDocking.pdbqt", overwrite=True)
         print('Wide Box', bestScore, f"{meanScore} \u00B1 {stdScore}", f"{np.round(center_x,2)},{np.round(center_y,2)},{np.round(center_z,2)}",
               f"{int(box_x)},{int(box_y)},{int(box_z)}", 1, exh, sep='\t', file=f)
 

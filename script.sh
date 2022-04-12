@@ -23,6 +23,7 @@ echo "PDB: $pdbFile";
 echo "Output dir: $outputDir";
 
 baseDir="$PWD"
+rm -rf "$outputDir/work"
 mkdir -p "$outputDir/work/docking"
 mkdir -p "$outputDir/work/multiqc_files"
 
@@ -33,6 +34,7 @@ python "$AFPAP_PATH/bin/AFPAP_pfam.py" -j "$outputDir/work/pfam.json" -o $output
 
 python "$AFPAP_PATH/bin/AFPAP_secondary_structure.py" -i $pdbFile -o $outputDir --AFPAPpath $AFPAP_PATH
 python "$AFPAP_PATH/bin/AFPAP_structure_analysis.py" -i "$outputDir/work/proteinStructure.pdb" -o $outputDir --AFPAPpath $AFPAP_PATH
+python "$AFPAP_PATH/bin/AFPAP_mutations.py" -i "$outputDir/work/proteinStructure.pdb" -o $outputDir --AFPAPpath $AFPAP_PATH
 
 prank predict -f "$outputDir/work/proteinStructure.pdb" -o "$outputDir/work" -c alphafold
 

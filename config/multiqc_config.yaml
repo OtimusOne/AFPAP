@@ -161,16 +161,24 @@ sp:
         fn: 'p2rank_predictions.csv'
 
 report_section_order:
-    protein_sequence:
-        order: -1001
-    protein_structure:
-        order: -1000
-    molecular_docking:
-        order: -999
-    p2rank:
+    sequence_analysis:
         order: -100
+    protein_sequence:
+        order: -101
+    evolutionary_analysis:
+        order: -200
+    pfam:
+        order: -201
+    structure_analysis:
+        order: -300
+    protein_structure:
+        order: -301
+    molecular_docking:
+        order: -400
+    p2rank:
+        order: -409
     pocket_viewer:
-        order: -99
+        order: -408
 
 
 table_columns_placement:
