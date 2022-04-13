@@ -374,19 +374,24 @@ div#icn3dwrap label {
 }
 
 /* Mutation Viewer */
-.mutationContainer{
-  overflow-x:auto;
+.mutationContainer {
+  overflow-x: auto;
   width: 95%;
 }
+
 .mutationTable {
   border-collapse: collapse;
   border-spacing: 0;
   border: 1px solid #ddd;
 }
+
 .mutationTable th {
   text-align: center;
+  vertical-align: middle;
 }
-.mutationTable td {
+
+.mutationTable td, .mutationTable>tbody>tr>td {
   text-align: center;
-  font-size: 10px;
+  vertical-align: middle;
+  padding: 4px 6px;
 }

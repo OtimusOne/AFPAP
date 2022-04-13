@@ -25,9 +25,9 @@ def generate_mutation_effect_color(score=0):
     limit = 8
     if score < 0:
         offset = (limit+score)/limit if score > -limit else 0
-        return f'rgb(255,{offset*255},{offset*255})'
+        return f'rgb(255,{round(offset*255,2)},{round(offset*255,2)})'
     offset = score/limit if score < limit else 1
-    return f'rgb({255*(1-offset)},255,{255*(1-offset)})'
+    return f'rgb({round(255*(1-offset),2)},255,{round(255*(1-offset),2)})'
 
 
 def main():
@@ -75,8 +75,8 @@ def main():
                 sym_table_body += f"<tr><td>{residue}</td>"
                 mutation_result_row = mutation_result[mutation_result["Mutated"] == residue]
                 for i, row in mutation_result_row.iterrows():
-                    ib_table_body += f"<td style='background-color:{generate_mutation_effect_color(row['ddG_SimBa_IB'])}'><span data-toggle='tooltip' title='{one_to_three(row['Wild'])}{i+1} to {one_to_three(residue)}'>{round(row['ddG_SimBa_IB'],3)}</span></td>"
-                    sym_table_body += f"<td style='background-color:{generate_mutation_effect_color(row['ddG_SimBa_SYM'])}'><span data-toggle='tooltip' title='{one_to_three(row['Wild'])}{i+1} to {one_to_three(residue)}'>{round(row['ddG_SimBa_SYM'],3)}</span></td>"
+                    ib_table_body += f"<td style='background-color:{generate_mutation_effect_color(row['ddG_SimBa_IB'])}'><span data-toggle='tooltip' title='{one_to_three(row['Wild'])}{i+1} to {one_to_three(residue)}'>{round(row['ddG_SimBa_IB'],2)}</span></td>"
+                    sym_table_body += f"<td style='background-color:{generate_mutation_effect_color(row['ddG_SimBa_SYM'])}'><span data-toggle='tooltip' title='{one_to_three(row['Wild'])}{i+1} to {one_to_three(residue)}'>{round(row['ddG_SimBa_SYM'],2)}</span></td>"
                 ib_table_body += "</tr>\n"
                 sym_table_body += "</tr>\n"
 

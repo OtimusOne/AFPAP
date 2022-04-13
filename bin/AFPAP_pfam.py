@@ -59,12 +59,7 @@ def create_seq_row(seq_string="", pp_string=""):
 
 def main():
     '''
-
-
-    Parameters:
-
-    Returns:
-
+    Python script for generating Pfam family alignment.
     '''
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbosity', action="count", help="verbosity")
