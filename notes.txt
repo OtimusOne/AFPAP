@@ -25,6 +25,7 @@ pymol -cq
 
 ./script.sh -i input/FABPH.fasta -p input/FABPH.pdb -l input/OLA.mol2 
 
+./script.sh -i input/CAS9.fasta -p input/CAS9.pdb -l input/vitE.pdb 
 
 
 prepare_receptor -r input/1iep.pdb -o output/dock/1iep_receptor.pdbqt -A "hydrogens"
@@ -59,6 +60,6 @@ pfam_scan.pl -clan_overlap -align -json pretty -fasta ../AFPAP/input/RBP4.fasta 
 
 
 
-
+conda install -c bioconda  muscle cd-hit blast
 
 conda install openbabel -c conda-forge

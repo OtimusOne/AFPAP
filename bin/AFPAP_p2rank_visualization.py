@@ -1,7 +1,9 @@
+'''
 # File name: AFPAP_p2rank_visualization.py
 # Description: Python script for parsing P2Rank output
 # Author: Maghiar Octavian
 # Date: 04-04-2022
+'''
 import argparse
 import logging
 import pathlib
@@ -9,6 +11,9 @@ import pandas as pd
 
 
 def main():
+    '''
+    Python script for parsing P2Rank output.
+    '''
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbosity', action="count", help="verbosity")
     parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output", help="Output Directory")
@@ -17,30 +22,30 @@ def main():
     parser.add_argument("-c", "--csv", help="CSV")
 
     args = parser.parse_args()
-    consoleLogger = logging.StreamHandler()
-    consoleLogger.setLevel(logging.INFO if args.verbosity else logging.ERROR)
-    fileLogger = logging.FileHandler(f"{args.outputDir}/workflow.log", mode='a')
-    fileLogger.setLevel(logging.INFO)
+    console_logger = logging.StreamHandler()
+    console_logger.setLevel(logging.INFO if args.verbosity else logging.ERROR)
+    file_logger = logging.FileHandler(f"{args.outputDir}/workflow.log", mode='a')
+    file_logger.setLevel(logging.INFO)
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(name)s] %(levelname)-8.8s - %(message)s",
         handlers=[
-            fileLogger,
-            consoleLogger
+            file_logger,
+            console_logger
         ]
     )
     logging.info("P2Rank visualization...")
-    with open(args.pymol_script, 'a') as file:
-        with open(f"{args.AFPAPpath}/config/pymol.pml", 'r') as pymol:
-            pymolData = pymol.read()
-            file.write(pymolData)
+    with open(args.pymol_script, 'a', encoding="utf8") as file:
+        with open(f"{args.AFPAPpath}/config/pymol.pml", 'r', encoding="utf8") as pymol:
+            pymol_data = pymol.read()
+            file.write(pymol_data)
 
-    df = pd.read_csv(args.csv)
-    df = df.rename(columns=lambda x: x.strip())
-    df = df.drop(["residue_ids", "surf_atom_ids"], axis=1)
-    df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
-    df.columns = ["Name", "Rank", "Score", "Probability", "SAS points", "Surface atoms", "Center X", "Center Y", "Center Z"]
-    df.to_csv(f"{args.outputDir}/work/p2rank_predictions.csv", index=False)
+    p2rank_predictions = pd.read_csv(args.csv)
+    p2rank_predictions = p2rank_predictions.rename(columns=lambda x: x.strip())
+    p2rank_predictions = p2rank_predictions.drop(["residue_ids", "surf_atom_ids"], axis=1)
+    p2rank_predictions = p2rank_predictions.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+    p2rank_predictions.columns = ["Name", "Rank", "Score", "Probability", "SAS points", "Surface atoms", "Center X", "Center Y", "Center Z"]
+    p2rank_predictions.to_csv(f"{args.outputDir}/work/p2rank_predictions.csv", index=False)
 
 
 if __name__ == '__main__':
