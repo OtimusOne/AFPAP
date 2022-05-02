@@ -56,7 +56,7 @@ if [ -f "$ligandFile" ] ; then
     prepare_ligand -l "$outputDir/work/docking/$ligand_name" -o "$ligand_base_name/$ligand_base_name.pdbqt"
     cd $baseDir
     python "$AFPAP_PATH/bin/AFPAP_molecular_docking.py" -r "$outputDir/work/docking/receptor.pdbqt" -l "$outputDir/work/docking/$ligand_base_name/$ligand_base_name.pdbqt" -n $ligand_base_name -e $md_exhaustiveness -o $outputDir --AFPAPpath $AFPAP_PATH
-    cd "$outputDir/work/docking"
+    cd "$outputDir/work/docking/$ligand_base_name"
     pymol -cq generate_complex.pml
     cd $baseDir
 fi

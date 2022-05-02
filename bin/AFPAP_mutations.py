@@ -25,9 +25,9 @@ def generate_mutation_effect_color(score=0):
     limit = 8
     if score < 0:
         offset = (limit+score)/limit if score > -limit else 0
-        return f'rgb(255,{round(offset*255,2)},{round(offset*255,2)})'
+        return f'rgb(255,{int(round(offset*255,0))},{int(round(offset*255,0))})'
     offset = score/limit if score < limit else 1
-    return f'rgb({round(255*(1-offset),2)},255,{round(255*(1-offset),2)})'
+    return f'rgb({int(round(255*(1-offset)))},255,{int(round(255*(1-offset)))})'
 
 
 def main():
@@ -80,7 +80,7 @@ def main():
                 ib_table_body += "</tr>\n"
                 sym_table_body += "</tr>\n"
 
-            template_data = template_data.replace("---tableSimBaIB---", ib_table_body)
+            # template_data = template_data.replace("---tableSimBaIB---", ib_table_body)
             template_data = template_data.replace("---tableSimBaSYM---", sym_table_body)
             with open(f'{args.outputDir}/work/multiqc_files/mutation_mqc.html', 'w', encoding="utf8") as mqc_file:
                 print(template_data, file=mqc_file)

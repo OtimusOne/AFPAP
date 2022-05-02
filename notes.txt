@@ -63,3 +63,6 @@ pfam_scan.pl -clan_overlap -align -json pretty -fasta ../AFPAP/input/RBP4.fasta 
 conda install -c bioconda  muscle cd-hit blast
 
 conda install openbabel -c conda-forge
+
+
+ nextflow run main.nf --fasta input/FABPH.fasta --pdb input/FABPH.pdb --ligands "input/vitE.pdb input/OLA.mol2"

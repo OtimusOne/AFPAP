@@ -7,6 +7,7 @@
 import argparse
 import logging
 import pathlib
+import os.path
 import numpy as np
 import pandas as pd
 from Bio.PDB import PDBParser
@@ -75,7 +76,9 @@ def main():
     parser.add_argument("-r", "--receptor", help="Receptor")
     parser.add_argument("-l", "--ligand", help="Ligand")
     parser.add_argument("-n", "--name", help="Ligand name")
-    parser.add_argument("-e", "--exhaustiveness", help="Exhaustiveness")
+    parser.add_argument("-e", "--exhaustiveness", help="Exhaustiveness", default=8)
+    parser.add_argument("--box_size", help="Box size", default=20)
+    parser.add_argument("--spacing", help="Spacing", default=0.375)
 
     args = parser.parse_args()
     console_logger = logging.StreamHandler()
@@ -93,40 +96,42 @@ def main():
     logging.info("Molecular docking %s...", args.name)
     with open(f'{args.outputDir}/work/multiqc_files/molecular_docking_{args.name}_mqc.txt', 'w', encoding="utf8") as mqc_file:
         with open(f'{args.AFPAPpath}/config/molecularDocking_template.txt', 'r', encoding="utf8") as template:
-            exh = int(args.exhaustiveness)
+            md_exhaustiveness = int(args.exhaustiveness)
+            md_box_size = int(args.box_size)
+            md_spacing = float(args.spacing)
             template_data = template.read()
             template_data = template_data.replace('--ligand--', args.name)
             print(template_data, file=mqc_file)
+        if os.path.exists(f"{args.outputDir}/work/p2rank_predictions.csv"):
+            p2rank_precitions = pd.read_csv(f"{args.outputDir}/work/p2rank_predictions.csv")
+            with open(f'{args.outputDir}/work/docking/{args.name}/generate_complex.pml', 'a', encoding="utf8") as pml:
+                print("set retain_order\nset pdb_retain_ids", file=pml)
+                for i, row in p2rank_precitions.iterrows():
+                    logging.info("%s - Docking pocket %d/%d...", args.name, i+1, p2rank_precitions.shape[0])
 
-        p2rank_precitions = pd.read_csv(f"{args.outputDir}/work/p2rank_predictions.csv")
-        with open(f'{args.outputDir}/work/docking/generate_complex.pml', 'a', encoding="utf8") as pml:
-            print("set retain_order\nset pdb_retain_ids", file=pml)
-            for i, row in p2rank_precitions.iterrows():
-                logging.info("Docking pocket %d/%d...", i+1, p2rank_precitions.shape[0])
+                    vina_object = dock(receptor=args.receptor, ligand=args.ligand, center=[row['Center X'], row['Center Y'], row['Center Z']], box_size=[md_box_size, md_box_size, md_box_size], spacing=md_spacing, exhaustiveness=md_exhaustiveness)
 
-                vina_object = dock(receptor=args.receptor, ligand=args.ligand, center=[row['Center X'], row['Center Y'], row['Center Z']], box_size=[20, 20, 20], spacing=0.375, exhaustiveness=exh)
+                    energies = vina_object.energies()[:, 0]
+                    best_score, mean_score, std_score = np.round(energies[0], 4), np.round(np.mean(energies), 4), np.round(np.std(energies), 4)
+                    vina_object.write_poses(f"{args.outputDir}/work/docking/{args.name}/{args.name}_pocket{i+1}_bestPose.pdbqt", overwrite=True, n_poses=1)
+                    vina_object.write_poses(f"{args.outputDir}/work/docking/{args.name}/{args.name}_pocket{i+1}.pdbqt", overwrite=True)
+                    print(f'load "{args.name}_pocket{i+1}_bestPose.pdbqt", ligand', file=pml)
+                    print('load "../receptor.pdbqt", receptor', file=pml)
+                    print(f'save Complex{i+1}.pdb, state=1', file=pml)
+                    print('delete all', file=pml)
 
-                energies = vina_object.energies()[:, 0]
-                best_score, mean_score, std_score = np.round(energies[0], 4), np.round(np.mean(energies), 4), np.round(np.std(energies), 4)
-                vina_object.write_poses(f"{args.outputDir}/work/docking/{args.name}/{args.name}_pocket{i+1}_bestPose.pdbqt", overwrite=True, n_poses=1)
-                vina_object.write_poses(f"{args.outputDir}/work/docking/{args.name}/{args.name}_pocket{i+1}.pdbqt", overwrite=True)
-                print(f'load "{args.name}/{args.name}_pocket{i+1}_bestPose.pdbqt", ligand', file=pml)
-                print('load "receptor.pdbqt", receptor', file=pml)
-                print(f'save {args.name}/Complex{i+1}.pdb, state=1', file=pml)
-                print('delete all', file=pml)
+                    print(row['Name'], best_score, f"{mean_score} \u00B1 {std_score}",
+                        f"{np.round(row['Center X'],2)},{np.round(row['Center Y'],2)},{np.round(row['Center Z'],2)}", f"{md_box_size},{md_box_size},{md_box_size}", md_spacing, md_exhaustiveness, sep='\t', file=mqc_file)
 
-                print(row['Name'], best_score, f"{mean_score} \u00B1 {std_score}",
-                      f"{np.round(row['Center X'],2)},{np.round(row['Center Y'],2)},{np.round(row['Center Z'],2)}", "20,20,20", 0.375, exh, sep='\t', file=mqc_file)
-
-        logging.info("Blind docking...")
+        logging.info("%s - Blind docking...", args.name)
         center_x, box_x, center_y, box_y, center_z, box_z = calculate_wide_box(args.receptor)
-        vina_object = dock(receptor=args.receptor, ligand=args.ligand, center=[center_x, center_y, center_z], box_size=[box_x, box_y, box_z], spacing=1, exhaustiveness=exh)
+        vina_object = dock(receptor=args.receptor, ligand=args.ligand, center=[center_x, center_y, center_z], box_size=[box_x, box_y, box_z], spacing=1, exhaustiveness=md_exhaustiveness)
         energies = vina_object.energies()[:, 0]
         best_score, mean_score, std_score = np.round(energies[0], 4), np.round(np.mean(energies), 4), np.round(np.std(energies), 4)
         vina_object.write_poses(f"{args.outputDir}/work/docking/{args.name}/{args.name}_blindDocking_bestPose.pdbqt", overwrite=True, n_poses=1)
         vina_object.write_poses(f"{args.outputDir}/work/docking/{args.name}/{args.name}_blindDocking.pdbqt", overwrite=True)
         print('Wide Box', best_score, f"{mean_score} \u00B1 {std_score}", f"{np.round(center_x,2)},{np.round(center_y,2)},{np.round(center_z,2)}",
-              f"{int(box_x)},{int(box_y)},{int(box_z)}", 1, exh, sep='\t', file=mqc_file)
+              f"{int(box_x)},{int(box_y)},{int(box_z)}", 1, md_exhaustiveness, sep='\t', file=mqc_file)
 
 
 if __name__ == '__main__':

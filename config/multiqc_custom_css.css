@@ -395,3 +395,11 @@ div#icn3dwrap label {
   vertical-align: middle;
   padding: 4px 6px;
 }
+
+.mutationScore {
+  text-align: center;
+  vertical-align: middle;
+  font-family: monospace;
+  font-size: 12px;
+  padding: 4px 4px;
+}
