@@ -73,9 +73,9 @@ def main():
     parser.add_argument('-v', '--verbosity', action="count", help="verbosity")
     parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output", help="Output Directory")
     parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True, help="Path to AFPAP home")
-    parser.add_argument("-r", "--receptor", help="Receptor")
-    parser.add_argument("-l", "--ligand", help="Ligand")
-    parser.add_argument("-n", "--name", help="Ligand name")
+    parser.add_argument("-r", "--receptor", required=True, help="Receptor")
+    parser.add_argument("-l", "--ligand", required=True, help="Ligand")
+    parser.add_argument("-n", "--name", default='ligand', help="Ligand name")
     parser.add_argument("-e", "--exhaustiveness", help="Exhaustiveness", default=8)
     parser.add_argument("--box_size", help="Box size", default=20)
     parser.add_argument("--spacing", help="Spacing", default=0.375)
@@ -109,7 +109,8 @@ def main():
                 for i, row in p2rank_precitions.iterrows():
                     logging.info("%s - Docking pocket %d/%d...", args.name, i+1, p2rank_precitions.shape[0])
 
-                    vina_object = dock(receptor=args.receptor, ligand=args.ligand, center=[row['Center X'], row['Center Y'], row['Center Z']], box_size=[md_box_size, md_box_size, md_box_size], spacing=md_spacing, exhaustiveness=md_exhaustiveness)
+                    vina_object = dock(receptor=args.receptor, ligand=args.ligand, center=[row['Center X'], row['Center Y'], row['Center Z']], box_size=[
+                                       md_box_size, md_box_size, md_box_size], spacing=md_spacing, exhaustiveness=md_exhaustiveness)
 
                     energies = vina_object.energies()[:, 0]
                     best_score, mean_score, std_score = np.round(energies[0], 4), np.round(np.mean(energies), 4), np.round(np.std(energies), 4)
@@ -121,7 +122,7 @@ def main():
                     print('delete all', file=pml)
 
                     print(row['Name'], best_score, f"{mean_score} \u00B1 {std_score}",
-                        f"{np.round(row['Center X'],2)},{np.round(row['Center Y'],2)},{np.round(row['Center Z'],2)}", f"{md_box_size},{md_box_size},{md_box_size}", md_spacing, md_exhaustiveness, sep='\t', file=mqc_file)
+                          f"{np.round(row['Center X'],2)},{np.round(row['Center Y'],2)},{np.round(row['Center Z'],2)}", f"{md_box_size},{md_box_size},{md_box_size}", md_spacing, md_exhaustiveness, sep='\t', file=mqc_file)
 
         logging.info("%s - Blind docking...", args.name)
         center_x, box_x, center_y, box_y, center_z, box_z = calculate_wide_box(args.receptor)

@@ -119,7 +119,7 @@ process PointMutations {
         val 0
     script:
     """
-    python "$params.AFPAP_PATH/bin/AFPAP_mutations.py" -i "$outDir/work/proteinStructure.pdb" -o $outDir --AFPAPpath $params.AFPAP_PATH
+    python "$params.AFPAP_PATH/bin/AFPAP_point_mutations.py" -i "$outDir/work/proteinStructure.pdb" -o $outDir --AFPAPpath $params.AFPAP_PATH
     """
 }
 

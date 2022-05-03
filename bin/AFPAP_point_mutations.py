@@ -1,5 +1,5 @@
 '''
-# File name: AFPAP_mutations.py
+# File name: AFPAP_point_mutations.py
 # Description: Python script for predicting point mutations effect on protein stability
 # Author: Maghiar Octavian
 # Date: 12-04-2022

@@ -65,7 +65,7 @@ def main():
     parser.add_argument('-v', '--verbosity', action="count", help="verbosity")
     parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output", help="Output Directory")
     parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True,  help="Path to AFPAP home")
-    parser.add_argument("-j", "--json", help="Pfam json file")
+    parser.add_argument("-j", "--json", required=True, help="Pfam json file")
 
     args = parser.parse_args()
     console_logger = logging.StreamHandler()

@@ -17,7 +17,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbosity', action="count", help="verbosity")
     parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output", help="Output Directory")
-    parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True,    help="Path to AFPAP home")
+    parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True, help="Path to AFPAP home")
     parser.add_argument("-p", "--pymol_script", help="PyMol script")
     parser.add_argument("-c", "--csv", help="CSV")
 
@@ -35,10 +35,10 @@ def main():
         ]
     )
     logging.info("P2Rank visualization...")
-    with open(args.pymol_script, 'a', encoding="utf8") as file:
-        with open(f"{args.AFPAPpath}/config/pymol.pml", 'r', encoding="utf8") as pymol:
-            pymol_data = pymol.read()
-            file.write(pymol_data)
+    with open(args.pymol_script, 'a', encoding="utf8") as pymol_script:
+        with open(f"{args.AFPAPpath}/config/pymol.pml", 'r', encoding="utf8") as pymol_template:
+            pymol_data = pymol_template.read()
+            pymol_script.write(pymol_data)
 
     p2rank_predictions = pd.read_csv(args.csv)
     p2rank_predictions = p2rank_predictions.rename(columns=lambda x: x.strip())

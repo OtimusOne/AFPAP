@@ -14,14 +14,13 @@ from Bio import BiopythonWarning
 
 def main():
     '''
-    # Description: Python script for extracting sequence from PDB
-
+    Python script for extracting sequence from PDB
     '''
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbosity', action="count", help="verbosity")
     parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output", help="Output Directory")
-    parser.add_argument("-i", "--input", help="Input PDB file")
-    parser.add_argument("-n", "--name", help="PDB name")
+    parser.add_argument("-i", "--input", required=True, help="Input PDB file")
+    parser.add_argument("-n", "--name", default='protein', help="PDB name")
 
     args = parser.parse_args()
 

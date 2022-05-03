@@ -39,11 +39,16 @@ conda config --env --add channels bioconda
 
 conda install 'numpy>=1.18.5' 'pandas>=1.4.1' 'biopython>=1.76' 'multiqc>=1.12' pymol-open-source=2.5.0
 sudo apt-get install dssp
-
+```
+- Install Nextflow and add the executable to PATH: https://github.com/nextflow-io/nextflow
+```
 curl -fsSL https://get.nextflow.io | bash
+```
+- Clone this repository:
+```
 git clone https://github.com/OtimusOne/AFPAP.git
 ```
-After installation set the path variable inside **nextflow.config**:
+ - After installation set the path variable inside **nextflow.config**:
 ```
 params {
     AFPAP_PATH="/path/to/AFPAP/root"
@@ -101,7 +106,7 @@ https://ccsb.scripps.edu/adfr/downloads/
 pip install vina
 ```
 - If P2Rank is installed Vina will dock the ligands to each of the predicted pockets, otherwise it will execute only blind docking.
-- If Vina is not installed set *skipsMolecularDocking = true* inside **nextflow.config**.
+- If Vina is not installed set *skipMolecularDocking = true* inside **nextflow.config**.
 
 ## Usage <a name="usage"></a>
 
