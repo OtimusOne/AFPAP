@@ -129,6 +129,7 @@ dmypy.json
 .pyre/
 .vscode/
 .nextflow/
+.nextflow.log*
 output*/
 misc/
 work/

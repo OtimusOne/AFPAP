@@ -64,20 +64,20 @@ def main():
         with open(f"{args.AFPAPpath}/config/mutation_template.html", 'r', encoding="utf8") as template:
             template_data = template.read()
             header = ""
-            for i, residue in enumerate(mutation_result[mutation_result["Mutated"] == 'A']["Wild"].to_list()):
-                header += f"<th><span data-toggle='tooltip' title='{one_to_three(residue)}{i+1}'>{residue}</span></th>\n"
+            for _, row in mutation_result[mutation_result["Mutated"] == 'A'].iterrows():
+                header += f"<th><span data-toggle='tooltip' title='{one_to_three(row['Wild'])} {row['Chain']}{row['Number']}'>{row['Wild']}</span></th>\n"
             template_data = template_data.replace("---tableHeader---", header)
 
-            ib_table_body = ""
+            #ib_table_body = ""
             sym_table_body = ""
             for residue in residues:
-                ib_table_body += f"<tr><td>{residue}</td>"
+                #ib_table_body += f"<tr><td>{residue}</td>"
                 sym_table_body += f"<tr><td>{residue}</td>"
                 mutation_result_row = mutation_result[mutation_result["Mutated"] == residue]
-                for i, row in mutation_result_row.iterrows():
-                    ib_table_body += f"<td style='background-color:{generate_mutation_effect_color(row['ddG_SimBa_IB'])}'><span data-toggle='tooltip' title='{one_to_three(row['Wild'])}{i+1} to {one_to_three(residue)}'>{round(row['ddG_SimBa_IB'],2)}</span></td>"
-                    sym_table_body += f"<td style='background-color:{generate_mutation_effect_color(row['ddG_SimBa_SYM'])}'><span data-toggle='tooltip' title='{one_to_three(row['Wild'])}{i+1} to {one_to_three(residue)}'>{round(row['ddG_SimBa_SYM'],2)}</span></td>"
-                ib_table_body += "</tr>\n"
+                for _, row in mutation_result_row.iterrows():
+                    #ib_table_body += f"<td style='background-color:{generate_mutation_effect_color(row['ddG_SimBa_IB'])}'><span data-toggle='tooltip' title='{one_to_three(row['Wild'])} {row['Chain']}{row['Number']} to {one_to_three(residue)}'>{round(row['ddG_SimBa_IB'],2)}</span></td>"
+                    sym_table_body += f"<td style='background-color:{generate_mutation_effect_color(row['ddG_SimBa_SYM'])}'><span data-toggle='tooltip' title='{one_to_three(row['Wild'])} {row['Chain']}{row['Number']} to {one_to_three(residue)}'>{round(row['ddG_SimBa_SYM'],2)}</span></td>"
+                #ib_table_body += "</tr>\n"
                 sym_table_body += "</tr>\n"
 
             # template_data = template_data.replace("---tableSimBaIB---", ib_table_body)
