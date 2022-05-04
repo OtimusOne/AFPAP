@@ -1,6 +1,6 @@
 <p align="center">
   <a href="" rel="noopener">
- <img width=400px src="./logo2.png" alt="Project logo"></a>
+ <img width=400px src="./docs/logo2.png" alt="Project logo"></a>
 </p>
 
 <h3 align="center">AlphaFold-based Protein Analysis Pipeline</h3>

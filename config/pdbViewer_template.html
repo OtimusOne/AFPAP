@@ -25,7 +25,8 @@ section_name: '3D Structure'
 </body>
 <script type="text/javascript">
   $(document).ready(function () {
-    pdbData = `--pdb--`;
+    var pdbData = `--pdb--`;
+    var pdbType = '--pdb_AF--';
     var cfg = {
       divid: 'icn3dwrap',
       width: '1280px',
@@ -42,7 +43,12 @@ section_name: '3D Structure'
 
     var icn3dui = new icn3d.iCn3DUI(cfg);
     $.when(icn3dui.show3DStructure()).then(function () {
-      icn3dui.icn3d.setOptionCls.setOption('color', 'confidence');
+      if(pdbType === 'alphafold'){
+        icn3dui.icn3d.setOptionCls.setOption('color', 'confidence');
+      }
+      else{
+        icn3dui.icn3d.setOptionCls.setOption('color', 'spectrum');
+      }
       $(window).scrollTop(0);
     });
     $(window).scrollTop(0);

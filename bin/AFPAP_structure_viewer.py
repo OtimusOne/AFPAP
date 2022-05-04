@@ -18,6 +18,7 @@ def main():
     parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output", help="Output Directory")
     parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True, help="Path to AFPAP home")
     parser.add_argument("-i", "--input", required=True, help="Input file")
+    parser.add_argument("--pdb_AF", help="AlpahFold prediction PDB")
 
     args = parser.parse_args()
 
@@ -40,7 +41,9 @@ def main():
         with open(f"{args.AFPAPpath}/config/pdbViewer_template.html", 'r', encoding="utf8") as template:
             template_data = template.read()
             template_data = template_data.replace("--pdb--", pdb_data)
-            with open(f'{args.outputDir}/work/multiqc_files/struct_viewer_mqc.html', 'w', encoding="utf8") as mqc_file:
+            template_data = template_data.replace("--pdb_AF--", 'alphafold' if args.pdb_AF == 'true' or args.pdb_AF == 1 else 'experimental')
+
+            with open(f'{args.outputDir}/work/multiqc_files/structure_viewer_mqc.html', 'w', encoding="utf8") as mqc_file:
                 mqc_file.write(template_data)
 
 

@@ -1,53 +1,135 @@
 #! /usr/bin/env nextflow
-nextflow.enable.dsl=2
+nextflow.enable.dsl = 2
 
 def helpMessage() {
-  log.info """
-        Usage:
-        The typical command for running the pipeline is as follows:
-            nextflow run main.nf --fasta input.fasta
-            nextflow run main.nf --pdb input.pdb
+    log.info """
+----------------------------------------------------------------------------------------------------
+ AFPAP v1.0
+----------------------------------------------------------------------------------------------------
+    Usage:
+    The typical command for running the pipeline is as follows:
+        nextflow run main.nf --fasta input.fasta
+        nextflow run main.nf --pdb input.pdb
 
+    Mandatory input:
+    --fasta <path>                  Sequence fasta file
+        OR
+    --pdb <path>                    Structure PDB file
+    If a sequence fasta file is provided the structure will be predicted using AlphaFold.
+    If a pdb file is provided the sequence will be extracted from the structure.
 
-        Mandatory input:
-        --fasta                        Sequence fasta file
-          OR
-        --pdb                          Structure PDB file
-        If a sequence fasta file is provided the structure will be predicted using AlphaFold.
-        If a pdb file is provided the sequence will be extracted from the structure.
+    After intallation the following arguments should be set in nexflow.config before first use:
+    --AFPAP_PATH <path>             Path to AFPAP root directory
 
-        After intallation the following arguments should be set in nexflow.config before first use:
-        --AFPAP_PATH                   Path to AFPAP root directory
-        --Pfam_PATH                    Path to Pfam-A.hmm file
+    --Pfam_PATH <path>              Path to Pfam-A.hmm file
 
-        Optional arguments:
-        --outputDir                    Output directory (default './output')
-        --ligands                      List of ligands in .pdb or .mol2 formats (default false)
-                                       ex. --ligands "path/to/ligand1.pdb path/to/ligand2.mol2"
-        --md_exhaustiveness            Moleculat docking - numbers of Monte Carlo runs (default 4)
-        --md_box_size                  Moleculat docking - grid box x,y,z points (default 20)
-        --md_spacing                   Moleculat docking - spacing between grid points (default 0.375)
-        --skipAlphaFold                Skip AlphaFold structure prediction (default true)        
-        --skipSequenceAnalysis         Skip sequence analysis (default false)
-        --skipPfamSearch               Skip Pfam search (default false)
-        --skipStructureViewer          Skip raport 3D structure viewer (default false)
-        --skipPocketPrediction         Skip pocket prediction (default false)
-        --skipPointMutations           Skip point mutations effect prediction (default false)
-        --skipMolecularDocking         Skip molecular docking (default false)
-        --skipMultiQC                  Skip MultiQC raport generation (default false)
-        --help                         This usage statement
-        """
+    Optional arguments:
+    --outputDir <path>              Output directory (default './output')
+
+    --ligands <path>                List of ligands in .pdb or .mol2 formats (default false)
+                                    ex. --ligands "path/to/ligand1.pdb path/to/ligand2.mol2"
+
+    --md_exhaustiveness <int>       Molecular docking - numbers of Monte Carlo runs (default 4)
+
+    --md_box_size <int>             Molecular docking - nr. of grid box x,y,z points (default 20)
+
+    --md_spacing <float>            Molecular docking - spacing between grid points (default 0.375)
+
+    --pdb_AF <0/1>                  Treats PDB file as AlphaFold prediction (defalut true)
+                                    Set to false if using experimental structures
+
+    --skipAlphaFold <0/1>           Skip AlphaFold structure prediction (default true)
+
+    --skipSequenceAnalysis <0/1>    Skip sequence analysis (default false)
+
+    --skipPfamSearch <0/1>          Skip Pfam search (default false)
+
+    --skipStructureViewer <0/1>     Skip raport 3D structure viewer (default false)
+
+    --skipPocketPrediction <0/1>    Skip pocket prediction (default false)
+
+    --skipPointMutations <0/1>      Skip point mutations effect prediction (default false)
+
+    --skipMolecularDocking <0/1>    Skip molecular docking (default false)
+
+    --skipMultiQC <0/1>             Skip MultiQC raport generation (default false)
+
+    --help                          This usage statement
+    """
+}
+
+def validateParameters() {
+    if (!params.fasta && !params.pdb) {
+        log.error'Missing input file parameters!'
+        exit 1
+    }
+    if (!(params.md_exhaustiveness instanceof java.lang.Integer)) {
+        log.error'Exhaustiveness must be integer!'
+        exit 1
+    }
+    if (!(params.md_box_size instanceof java.lang.Integer)) {
+        log.error'Box size must be integer!'
+        exit 1
+    }
+    if (!params.md_spacing.toString().isNumber()) {
+        log.error'Grid spacing must be a number!'
+        exit 1
+    }
+
+    validBool = [0, 1, false, true, 'false', 'true']
+    if (!validBool.contains(params.pdb_AF)) {
+        log.error"pdb_AF must be 0/1! ${params.pdb_AF.getClass()}"
+        exit 1
+    }
+    if (!validBool.contains(params.skipAlphaFold)) {
+        log.error'skipAlphaFold must be 0/1!'
+        exit 1
+    }
+    if (!validBool.contains(params.skipSequenceAnalysis)) {
+        log.error'skipSequenceAnalysis must be 0/1!'
+        exit 1
+    }
+    if (!validBool.contains(params.skipPfamSearch)) {
+        log.error'skipPfamSearch must be 0/1!'
+        exit 1
+    }
+    if (!validBool.contains(params.skipStructureViewer)) {
+        log.error'skipStructureViewer must be 0/1!'
+        exit 1
+    }
+    if (!validBool.contains(params.skipPocketPrediction)) {
+        log.error'skipPocketPrediction must be 0/1!'
+        exit 1
+    }
+    if (!validBool.contains(params.skipPointMutations)) {
+        log.error'skipPointMutations must be 0/1!'
+        exit 1
+    }
+    if (!validBool.contains(params.skipMolecularDocking)) {
+        log.error'skipMolecularDocking must be 0/1!'
+        exit 1
+    }
+    if (!validBool.contains(params.skipMultiQC)) {
+        log.error'skipMultiQC must be 0/1!'
+        exit 1
+    }
+    paramList = ['AFPAP_PATH', 'Pfam_PATH', 'fasta', 'pdb', 'outputDir', 'output-dir', 'help', 'ligands', 'md_exhaustiveness', 'md_box_size', 'md_spacing', 'pdb_AF', 'skipAlphaFold', 'skip-alpha-fold', 'skipSequenceAnalysis', 'skip-sequence-analysis', 'skipPfamSearch', 'skip-pfam-search', 'skipStructureViewer', 'skip-structure-viewer', 'skipPointMutations', 'skip-point-mutations', 'skipMolecularDocking', 'skip-molecular-docking', 'skipMultiQC', 'skip-multi-QC', 'skip-pocket-prediction', 'skipPocketPrediction']
+    for (parameter in params) {
+        if (!paramList.contains(parameter.key)) {
+            log.warn"Unknown parameter ${parameter.key}..."
+        }
+    }
 }
 
 process configurePipeline {
     output:
-        path("AFPAP_output")
+        path('AFPAP_output')
 
     script:
         """
         rm -rf "AFPAP_output/work"
         mkdir -p "AFPAP_output/work/multiqc_files"
-        if [ "$params.skipMolecularDocking" != "true" ] && [ "$params.ligands" != "false" ] ; then
+        if ( [ "$params.skipMolecularDocking" != "true" ] && [ "$params.skipMolecularDocking" != 1 ] ) && ( [ "$params.ligands" != "false" ] && [ "$params.ligands" != 0 ] ) ; then
             mkdir -p "AFPAP_output/work/docking"
         fi
         """
@@ -78,7 +160,7 @@ process sequenceAnalysis {
     """
 }
 
-process PfamAnalysis {
+process PfamSearch {
     input:
         path fastaFile
         path outDir
@@ -100,10 +182,10 @@ process prepareStructure {
     script:
     """
     python "$params.AFPAP_PATH/bin/AFPAP_secondary_structure.py" -i $pdbFile -o $outDir --AFPAPpath $params.AFPAP_PATH
-    if [ !$params.skipStructureViewer ] ; then
-        python "$params.AFPAP_PATH/bin/AFPAP_structure_analysis.py" -i "$outDir/work/proteinStructure.pdb" -o $outDir --AFPAPpath $params.AFPAP_PATH
+    if [ "$params.skipStructureViewer" != "true" ] && [ "$params.skipStructureViewer" != 1 ] ; then
+        python "$params.AFPAP_PATH/bin/AFPAP_structure_viewer.py" -i "$outDir/work/proteinStructure.pdb" -o $outDir --AFPAPpath $params.AFPAP_PATH --pdb_AF $params.pdb_AF
     fi
-    if [ "$params.skipMolecularDocking" != "true" ] && [ "$params.ligands" != "false" ] ; then
+    if ( [ "$params.skipMolecularDocking" != "true" ] && [ "$params.skipMolecularDocking" != 1 ] ) && ( [ "$params.ligands" != "false" ] && [ "$params.ligands" != 0 ] ) ; then
         cp "$outDir/work/proteinStructure.pdb" "$outDir/work/docking/receptor.pdb"
         cd "$outDir/work/docking"
         prepare_receptor -r receptor.pdb -o receptor.pdbqt -A "hydrogens"
@@ -130,11 +212,17 @@ process pocketPrediction {
     output:
         val 0
     script:
+    if (params.pdb_AF) {
+        predictionMode = '-c alphafold'
+    }
+    else {
+        predictionMode = ''
+    }
     """
-    prank predict -f "$outDir/work/proteinStructure.pdb" -o "$outDir/work" -c alphafold
+    prank predict -f "$outDir/work/proteinStructure.pdb" -o "$outDir/work" $predictionMode
     python "$params.AFPAP_PATH/bin/AFPAP_p2rank_visualization.py" -p "$outDir/work/visualizations/proteinStructure.pdb.pml" -c "$outDir/work/proteinStructure.pdb_predictions.csv" -o $outDir --AFPAPpath $params.AFPAP_PATH
     (cd "$outDir/work/visualizations"; pymol -cq proteinStructure.pdb.pml)
-    python "$params.AFPAP_PATH/bin/AFPAP_p2rank_gallery.py" -o $outDir --AFPAPpath $params.AFPAP_PATH 
+    python "$params.AFPAP_PATH/bin/AFPAP_p2rank_gallery.py" -o $outDir --AFPAPpath $params.AFPAP_PATH
     """
 }
 
@@ -146,8 +234,8 @@ process molecularDocking {
         val ppConfirm
     output:
         val 0
-    script: 
-    if(!ligandFile.exists()){
+    script:
+    if (!ligandFile.exists()) {
         log.warn """
         Ligand file does not exist $ligandFile
         """
@@ -164,10 +252,9 @@ process molecularDocking {
         pymol -cq generate_complex.pml
         """
     }
-
 }
 
-process MultiQCreport {
+process processPipelineOutput {
     publishDir "${params.outputDir}", mode: 'copy'
     input:
         path outDir
@@ -178,88 +265,91 @@ process MultiQCreport {
         val mutationConfirm
         val mdConfirm
     output:
-        path("./AFPAP_output")
+        path('./AFPAP_output')
     script:
     """
     echo $saConfirm $pfamConfirm $structConfirm $pocketConfirm $mutationConfirm $mdConfirm >> $outDir/work/ah.txt
-    if [ !$params.skipMultiQC ] ; then
-        multiqc -f -c "$params.AFPAP_PATH/config/multiqc_config.yaml" --custom-css-file "$params.AFPAP_PATH/config/multiqc_custom_css.css" -o $outDir $outDir    
+    if [ "$params.skipMultiQC" != "true" ] && [ "$params.skipMultiQC" != 1 ] ; then
+        multiqc -f -c "$params.AFPAP_PATH/config/multiqc_config.yaml" --custom-css-file "$params.AFPAP_PATH/config/multiqc_custom_css.css" -o $outDir $outDir
     fi
     """
 }
 
 workflow {
     // Show help message
-    if(params.help) {
+    if (params.help) {
         helpMessage()
         exit 0
     }
 
-    if(!params.fasta && !params.pdb){
-        log.error"Missing input parameters!"
-        exit 1
-    }
+    validateParameters()
+
     configurePipeline()
     pipeline_ch = configurePipeline.out
 
-    if(!params.fasta && params.pdb){
+    if (!params.fasta && params.pdb) {
         pdb_ch = Channel.fromPath(params.pdb)
         getFASTAfromPDB(pdb_ch, pipeline_ch)
         fasta_ch = getFASTAfromPDB.out
     }
-    else if(!params.pdb && params.fasta){
-        log.error"No PDB"
-        exit 1
+    else if (!params.pdb && params.fasta) {
+        if (params.skipAlphaFold) {
+            log.error'No AlphaFold - provide PDB file..'
+            exit 1
+        }
+        else {
+            log.warn'Predict structure...'
+            exit 1
+        }
     }
     else {
         fasta_ch = Channel.fromPath(params.fasta)
         pdb_ch = Channel.fromPath(params.pdb)
     }
-    
-    if(!params.skipSequenceAnalysis){
+
+    if (!params.skipSequenceAnalysis) {
         sequenceAnalysis(fasta_ch, pipeline_ch)
         sa_ch = sequenceAnalysis.out
     }
-    else{
+    else {
         sa_ch = Channel.from(0)
     }
-    
-    if(!params.skipPfamSearch){
-        PfamAnalysis(fasta_ch, pipeline_ch)
-        pfam_ch = PfamAnalysis.out
+
+    if (!params.skipPfamSearch) {
+        PfamSearch(fasta_ch, pipeline_ch)
+        pfam_ch = PfamSearch.out
     }
-    else{
+    else {
         pfam_ch = Channel.from(0)
     }
-    
+
     prepareStructure(pdb_ch, pipeline_ch)
     struct_ch = prepareStructure.out
 
-    if(!params.skipPointMutations){
+    if (!params.skipPointMutations) {
         PointMutations(pipeline_ch, struct_ch)
         mut_ch = PointMutations.out
     }
-    else{
+    else {
         mut_ch = Channel.from(0)
     }
 
-    if(!params.skipPocketPrediction){
+    if (!params.skipPocketPrediction) {
         pocketPrediction(pipeline_ch, struct_ch)
         pp_ch = pocketPrediction.out
     }
-    else{
+    else {
         pp_ch = Channel.from(0)
     }
 
-    if(!params.skipMolecularDocking && params.ligands){
-        ligands_ch = Channel.from(params.ligands.tokenize()).flatMap{ files(it) }.collect()
+    if (!params.skipMolecularDocking && params.ligands) {
+        ligands_ch = Channel.from(params.ligands.tokenize()).flatMap { files(it) }.collect()
         molecularDocking(pipeline_ch, ligands_ch, struct_ch, pp_ch)
         md_ch = molecularDocking.out.collect()
     }
-    else{
+    else {
         md_ch = Channel.from(0)
     }
 
-    MultiQCreport(pipeline_ch, sa_ch, pfam_ch, struct_ch, pp_ch, mut_ch, md_ch)
-
+    processPipelineOutput(pipeline_ch, sa_ch, pfam_ch, struct_ch, pp_ch, mut_ch, md_ch)
 }
