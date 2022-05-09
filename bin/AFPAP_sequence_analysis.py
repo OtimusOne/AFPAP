@@ -44,6 +44,7 @@ def section_protein_sequence_viewer(protein_sequence, args):
         "W": ["Tryptophan", "Hydrophobic", "Non-polar"],
         "Y": ["Tyrosine", "Polar"],
         "V": ["Valine", "Hydrophobic", "Non-polar"],
+        "X": [],
     }
     with open(f'{args.outputDir}/work/multiqc_files/seq_prot_mqc.html', 'w', encoding="utf8") as mqc_file:
         seq_split = 50
@@ -98,16 +99,16 @@ def section_sequence_properties(protein_sequence, args):
         "W": {"C": 11, "H": 12, "N": 2, "O": 2, "S": 0},
         "Y": {"C": 9, "H": 11, "N": 1, "O": 3, "S": 0},
     }
-    atom_count = {"C": 0, "H": 0, "N": 0, "O": 0, "S": 0}
+    atom_count = {"C": 0, "H": 2, "N": 0, "O": 1, "S": 0}
     window_scale = 9
 
     prot_param = ProteinAnalysis(protein_sequence)
     aa_dict = prot_param.count_amino_acids()
     for amino_acid in aa_dict:
         atom_count["C"] += residue_atom_count[amino_acid]["C"]*aa_dict[amino_acid]
-        atom_count["H"] += residue_atom_count[amino_acid]["H"]*aa_dict[amino_acid]
+        atom_count["H"] += (residue_atom_count[amino_acid]["H"]-2)*aa_dict[amino_acid]
         atom_count["N"] += residue_atom_count[amino_acid]["N"]*aa_dict[amino_acid]
-        atom_count["O"] += residue_atom_count[amino_acid]["O"]*aa_dict[amino_acid]
+        atom_count["O"] += (residue_atom_count[amino_acid]["O"]-1)*aa_dict[amino_acid]
         atom_count["S"] += residue_atom_count[amino_acid]["S"]*aa_dict[amino_acid]
 
     with open(f'{args.outputDir}/work/multiqc_files/seq_stats.txt', 'w', encoding="utf8") as mqc_file:
@@ -119,32 +120,32 @@ def section_sequence_properties(protein_sequence, args):
         print(os.path.basename(args.input), prot_param.molecular_weight(), atom_count["C"]+atom_count["H"]+atom_count["N"]+atom_count["O"]+atom_count["S"], prot_param.aromaticity(), prot_param.instability_index(), prot_param.isoelectric_point(
         ), f"{prot_param.molar_extinction_coefficient()[0]} : {prot_param.molar_extinction_coefficient()[1]}", prot_param.gravy(), negative_charge, positive_charge, sep='\t', file=mqc_file)
 
-    with open(f'{args.outputDir}/work/multiqc_files/seq_stats_flex.txt', 'w', encoding="utf8") as mqc_file:
+    with open(f'{args.outputDir}/work/multiqc_files/seq_flexibility.txt', 'w', encoding="utf8") as mqc_file:
         for i, flexibility in zip([x for x in range(1, len(protein_sequence)+1)], prot_param.protein_scale(window=window_scale, param_dict=ProtParamData.Flex)):
             print(f"{i+window_scale//2}\t{flexibility}", file=mqc_file)
 
-    with open(f'{args.outputDir}/work/multiqc_files/seq_stats_hydro.txt', 'w', encoding="utf8") as mqc_file:
+    with open(f'{args.outputDir}/work/multiqc_files/seq_hydrophobicity.txt', 'w', encoding="utf8") as mqc_file:
         for i, hydropathy in zip([x for x in range(1, len(protein_sequence)+1)], prot_param.protein_scale(window=window_scale, param_dict=ProtParamData.kd)):
             print(f"{i+window_scale//2}\t{hydropathy}", file=mqc_file)
 
-    with open(f'{args.outputDir}/work/multiqc_files/seq_stats_ph.txt', 'w', encoding="utf8") as mqc_file:
+    with open(f'{args.outputDir}/work/multiqc_files/seq_ph.txt', 'w', encoding="utf8") as mqc_file:
         for i in np.arange(1, 14.01, 0.05):
             print(i, prot_param.charge_at_pH(i), sep="\t", file=mqc_file)
 
-    with open(f'{args.outputDir}/work/multiqc_files/seq_stats_atomcount.txt', 'w', encoding="utf8") as mqc_file:
+    with open(f'{args.outputDir}/work/multiqc_files/seq_atom_count.txt', 'w', encoding="utf8") as mqc_file:
         atom_sting = "Atom\t"
         count_string = "Count\t"
         for atom, count in atom_count.items():
             atom_sting += f"{atom}\t"
             count_string += f"{count}\t"
-        print(atom_sting, end="\t", file=mqc_file)
-        print(count_string, end="\t", file=mqc_file)
+        print(atom_sting, file=mqc_file)
+        print(count_string, file=mqc_file)
 
-    with open(f'{args.outputDir}/work/multiqc_files/seq_stats_aa.txt', 'w', encoding="utf8") as mqc_file:
+    with open(f'{args.outputDir}/work/multiqc_files/seq_residue_count.txt', 'w', encoding="utf8") as mqc_file:
         print("Residue", end="\t", file=mqc_file)
         for amino_acid in aa_dict:
             print(amino_acid, sep='\t', end="\t", file=mqc_file)
-        print("\n", file=mqc_file)
+        print("", file=mqc_file)
         print("Residue", end="\t", file=mqc_file)
         for amino_acid in aa_dict:
             print(aa_dict[amino_acid], sep='\t', end="\t", file=mqc_file)

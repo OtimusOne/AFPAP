@@ -188,7 +188,7 @@ process prepareStructure {
     if ( [ "$params.skipMolecularDocking" != "true" ] && [ "$params.skipMolecularDocking" != 1 ] ) && ( [ "$params.ligands" != "false" ] && [ "$params.ligands" != 0 ] ) ; then
         cp "$outDir/work/proteinStructure.pdb" "$outDir/work/docking/receptor.pdb"
         cd "$outDir/work/docking"
-        prepare_receptor -r receptor.pdb -o receptor.pdbqt -A "hydrogens"
+        prepare_receptor -r receptor.pdb -o receptor.pdbqt -A "hydrogens" -e
     fi
     """
 }

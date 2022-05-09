@@ -1,3 +1,8 @@
+/* MultiQC raport */
+.side-nav-wrapper{
+  z-index: 1000;
+}
+
 /* Sequence viewer */
 div.code-parent {
   display: flex;

@@ -148,15 +148,15 @@ sp:
     sequencing_stats:
         fn: 'seq_stats.txt'
     flex:
-        fn: 'seq_stats_flex.txt'
+        fn: 'seq_flexibility.txt'
     hydro:
-        fn: 'seq_stats_hydro.txt'
+        fn: 'seq_hydrophobicity.txt'
     ph:
-        fn: 'seq_stats_ph.txt'
+        fn: 'seq_ph.txt'
     aa:
-        fn: 'seq_stats_aa.txt'
+        fn: 'seq_residue_count.txt'
     atom_count:
-        fn: 'seq_stats_atomcount.txt'
+        fn: 'seq_atom_count.txt'
     p2rank:
         fn: 'p2rank_predictions.csv'
 

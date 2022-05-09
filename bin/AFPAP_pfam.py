@@ -88,6 +88,7 @@ def main():
         if len(pfam_data) == 0:
             pfam_table += '<tr class="pfam-row2"><td colspan="14">No match found!</td></tr>'
         else:
+            pfam_data.sort(key = lambda x:float(x["bits"]), reverse = True)
             for record_id, record in enumerate(pfam_data):
                 alignment_table = ""
                 alignment_match = []
