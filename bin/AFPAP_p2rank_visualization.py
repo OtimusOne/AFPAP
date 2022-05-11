@@ -19,7 +19,7 @@ def main():
     parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output", help="Output Directory")
     parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True, help="Path to AFPAP home")
     parser.add_argument("-p", "--pymol_script", help="PyMol script")
-    parser.add_argument("-c", "--csv", help="CSV")
+    parser.add_argument("--csv", help="P2Rank prediction CSV file")
 
     args = parser.parse_args()
     console_logger = logging.StreamHandler()

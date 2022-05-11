@@ -64,9 +64,10 @@ def main():
     '''
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbosity', action="count", help="verbosity")
-    parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output", help="Output Directory")
-    parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True,  help="Path to AFPAP home")
     parser.add_argument("-i", "--input", required=True, help="Input file")
+    parser.add_argument('-o', '--outputDir', type=pathlib.Path, default="./output", help="Output Directory")
+    parser.add_argument("-n", "--name", default='proteinStructure.pdb', help="Output file name")
+    parser.add_argument('--AFPAPpath', type=pathlib.Path, required=True,  help="Path to AFPAP home")
 
     args = parser.parse_args()
     console_logger = logging.StreamHandler()
@@ -85,7 +86,7 @@ def main():
 
     with open(args.input, 'r', encoding="utf8") as pdb_file:
         pdb_data = pdb_file.read()
-        with open(f"{args.outputDir}/work/proteinStructure.pdb", 'w', encoding="utf8") as pdb_secondary_structure_file:
+        with open(f"{args.outputDir}/work/{args.name}", 'w', encoding="utf8") as pdb_secondary_structure_file:
 
             if pdb_data.find("HELIX") == -1 and pdb_data.find("SHEET") == -1:
 

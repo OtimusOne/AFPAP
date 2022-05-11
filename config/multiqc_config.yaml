@@ -17,20 +17,20 @@ custom_data:
             min: 0
         headers:
             Molecular weight:
-                description: "Calculated Molecular from Protein sequence."
+                description: "Molecular weight(g/mol)."
             Atoms:
                 description: "Total number of atoms."
                 format: '{:,.0f}'
             Aromaticity:
-                description: "Calculated aromaticity according to Lobry, 1994."
+                description: "Aromaticity according to Lobry, 1994.(relative frequency of Phe+Trp+Tyr)"
             Instability index:
-                description: "Calculated instability index according to Guruprasad et al 1990."
+                description: "Instability index according to Guruprasad et al 1990."
             Isoelctric point:
-                description: "Calculated isoelectric point."
+                description: "Isoelectric point."
             Extinction coefficients:
-                description: "Calculated the molar extinction coefficient assuming cysteines (reduced) and cystines residues (Cys-Cys-bond)"
+                description: "The molar extinction coefficient assuming cysteines (reduced) and cystines residues (Cys-Cys-bond)"
             GRAVY:
-                description: "Calculated gravy according to Kyte and Doolittle."
+                description: "Grand average of hydropathicity index(Gravy) according to Kyte and Doolittle."
             Negatively charged residues:
                 description: "Total number of negatively charged residues (Asp + Glu)."
                 format: '{:,.0f}'
@@ -43,7 +43,7 @@ custom_data:
         parent_name: "Sequence Analysis"
         parent_description: ""
         id: 'aa'
-        section_name: 'Amino acids composition'
+        section_name: 'Amino acid composition'
         plot_type: 'bargraph'
         pconfig:
             id: 'aa_plot'
@@ -54,7 +54,7 @@ custom_data:
         parent_name: "Sequence Analysis"
         parent_description: ""
         id: 'atom_count'
-        section_name: 'Atoms composition'
+        section_name: 'Atom composition'
         plot_type: 'bargraph'
         pconfig:
             id: 'atom_count_plot'
@@ -81,6 +81,7 @@ custom_data:
         parent_description: ""
         id: 'flex'
         section_name: 'Flexibility'
+        description: 'Vihinen 1994. scale'
         plot_type: 'linegraph'
         pconfig:
             id: 'flex_plot'
@@ -116,32 +117,31 @@ custom_data:
         plot_type: 'table'
         pconfig:
             id: 'p2rank_plot'
-            namespace: 'P2Rank pockets'
+            namespace: 'P2Rank'
             format: '{:,.2f}'
-            table_title: 'P2Rank pockets'
+            table_title: 'P2Rank'
             max: 0
             min: 0
         headers:
             Rank:
                 format: '{:,.0f}'
-                description: 'Pocket rank'
+                description: 'Pocket ranked based on score.'
             Score:
-                description: 'Pocket score'
+                description: 'Pocket predicted ligandability score.'
             Probability:
-                description: 'Probability of being a ligand-binding site'
+                description: 'Probability of being a ligand-binding site.'
             SAS points:
-                description: 'Solvent Accessible Surface points'
+                description: 'Nr. of Solvent Accessible Surface points.'
                 format: '{:,.0f}'
             Surface atoms:
-                description: 'Solvent exposed atoms'
+                description: 'Nr. of solvent exposed atoms.'
                 format: '{:,.0f}'
             Center X:
-                description: ''
+                description: 'Pocket X coordinate.'
             Center Y:
-                description: ''
+                description: 'Pocket Y coordinate.'
             Center Z:
-                description: ''
-
+                description: 'Pocket Z coordinate.'
 
 
 sp:

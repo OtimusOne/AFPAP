@@ -6,22 +6,22 @@
 # plot_type: 'table'
 # pconfig:
 #    id: 'docking_plot'
-#    namespace: 'AutoDockVina results'
+#    namespace: 'AutoDockVina'
 #    max: 0
 #    min: 0
 # headers:
 #    Best Score:
 #       format: '{:,.4f}'
-#       description: 'Best energy score(kcal/mol)'
+#       description: 'Best energy score(kcal/mol).'
 #    Avg. Score:
-#       description: 'Average energy score and standard deviation for poses within 3 kcal/mol from best pose'
+#       description: 'Average energy score and standard deviation for poses within 3 kcal/mol of best pose.'
 #    Center:
-#       description: 'Center docking position'
+#       description: 'Grid box center X,Y,Z coordinates.'
 #    Box Size:
-#       description: 'Size of the box(Å)'
+#       description: 'Grid box number of points.'
 #    Spacing:
 #       format: '{:,.3f}'
-#       description: 'Grid spacing'
+#       description: 'Grid box points spacing(Å).'
 #    Exhaustiveness:
 #       format: '{:,.0f}'
 #       description: 'Number of MC runs'

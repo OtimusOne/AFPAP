@@ -40,7 +40,7 @@ def main():
     logging.info("Sequence extraction...")
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', BiopythonWarning)
-        with open(f'{args.outputDir}/{args.name}.fasta', 'w', encoding="utf8") as fasta_file:
+        with open(f'{args.outputDir}/{args.name}', 'w', encoding="utf8") as fasta_file:
             for record in SeqIO.parse(args.input, 'pdb-atom'):
                 print('>' + record.id, file=fasta_file)
                 print(record.seq, file=fasta_file)

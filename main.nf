@@ -122,15 +122,18 @@ def validateParameters() {
 }
 
 process configurePipeline {
+    input:
+        path inputFile
     output:
-        path('AFPAP_output')
+        path("./$params.inputBaseName")
 
     script:
+    params.inputBaseName="${inputFile.baseName}"
         """
-        rm -rf "AFPAP_output/work"
-        mkdir -p "AFPAP_output/work/multiqc_files"
+        rm -rf "$params.inputBaseName/work"
+        mkdir -p "$params.inputBaseName/work/multiqc_files"
         if ( [ "$params.skipMolecularDocking" != "true" ] && [ "$params.skipMolecularDocking" != 1 ] ) && ( [ "$params.ligands" != "false" ] && [ "$params.ligands" != 0 ] ) ; then
-            mkdir -p "AFPAP_output/work/docking"
+            mkdir -p "$params.inputBaseName/work/docking"
         fi
         """
 }
@@ -140,11 +143,10 @@ process getFASTAfromPDB {
         path pdbFile
         path outDir
     output:
-        path "$outDir/${pdbFile.baseName}.fasta"
+        path "$outDir/${params.inputBaseName}.fasta"
     script:
     """
-    python "$params.AFPAP_PATH/bin/AFPAP_FASTA_from_PDB.py" -i $pdbFile -n ${pdbFile.baseName} -o $outDir
-
+    python "$params.AFPAP_PATH/bin/AFPAP_FASTA_from_PDB.py" -i $pdbFile -n "${params.inputBaseName}.fasta" -o $outDir
     """
 }
 
@@ -160,7 +162,7 @@ process sequenceAnalysis {
     """
 }
 
-process PfamSearch {
+process pfamSearch {
     input:
         path fastaFile
         path outDir
@@ -181,19 +183,20 @@ process prepareStructure {
         val 0
     script:
     """
-    python "$params.AFPAP_PATH/bin/AFPAP_secondary_structure.py" -i $pdbFile -o $outDir --AFPAPpath $params.AFPAP_PATH
+    cp $pdbFile "$outDir/${params.inputBaseName}.pdb"
+    python "$params.AFPAP_PATH/bin/AFPAP_secondary_structure.py" -i "$outDir/${params.inputBaseName}.pdb" -o $outDir --name "${params.inputBaseName}_fixed.pdb" --AFPAPpath $params.AFPAP_PATH
     if [ "$params.skipStructureViewer" != "true" ] && [ "$params.skipStructureViewer" != 1 ] ; then
-        python "$params.AFPAP_PATH/bin/AFPAP_structure_viewer.py" -i "$outDir/work/proteinStructure.pdb" -o $outDir --AFPAPpath $params.AFPAP_PATH --pdb_AF $params.pdb_AF
+        python "$params.AFPAP_PATH/bin/AFPAP_structure_viewer.py" -i "$outDir/work/"${params.inputBaseName}_fixed.pdb"" -o $outDir --AFPAPpath $params.AFPAP_PATH --pdb_AF $params.pdb_AF
     fi
     if ( [ "$params.skipMolecularDocking" != "true" ] && [ "$params.skipMolecularDocking" != 1 ] ) && ( [ "$params.ligands" != "false" ] && [ "$params.ligands" != 0 ] ) ; then
-        cp "$outDir/work/proteinStructure.pdb" "$outDir/work/docking/receptor.pdb"
+        cp "$outDir/work/${params.inputBaseName}_fixed.pdb" "$outDir/work/docking/receptor.pdb"
         cd "$outDir/work/docking"
         prepare_receptor -r receptor.pdb -o receptor.pdbqt -A "hydrogens" -e
     fi
     """
 }
 
-process PointMutations {
+process pointMutations {
     input:
         path outDir
         val structConfirm
@@ -201,7 +204,7 @@ process PointMutations {
         val 0
     script:
     """
-    python "$params.AFPAP_PATH/bin/AFPAP_point_mutations.py" -i "$outDir/work/proteinStructure.pdb" -o $outDir --AFPAPpath $params.AFPAP_PATH
+    python "$params.AFPAP_PATH/bin/AFPAP_point_mutations.py" -i "$outDir/work/${params.inputBaseName}_fixed.pdb" -o $outDir --AFPAPpath $params.AFPAP_PATH
     """
 }
 
@@ -219,9 +222,9 @@ process pocketPrediction {
         predictionMode = ''
     }
     """
-    prank predict -f "$outDir/work/proteinStructure.pdb" -o "$outDir/work" $predictionMode
-    python "$params.AFPAP_PATH/bin/AFPAP_p2rank_visualization.py" -p "$outDir/work/visualizations/proteinStructure.pdb.pml" -c "$outDir/work/proteinStructure.pdb_predictions.csv" -o $outDir --AFPAPpath $params.AFPAP_PATH
-    (cd "$outDir/work/visualizations"; pymol -cq proteinStructure.pdb.pml)
+    prank predict -f "$outDir/work/${params.inputBaseName}_fixed.pdb" -o "$outDir/work" $predictionMode
+    python "$params.AFPAP_PATH/bin/AFPAP_p2rank_visualization.py" -p "$outDir/work/visualizations/${params.inputBaseName}_fixed.pdb.pml" --csv "$outDir/work/${params.inputBaseName}_fixed.pdb_predictions.csv" -o $outDir --AFPAPpath $params.AFPAP_PATH
+    (cd "$outDir/work/visualizations"; pymol -cq "${params.inputBaseName}_fixed.pdb.pml")
     python "$params.AFPAP_PATH/bin/AFPAP_p2rank_gallery.py" -o $outDir --AFPAPpath $params.AFPAP_PATH
     """
 }
@@ -265,7 +268,7 @@ process processPipelineOutput {
         val mutationConfirm
         val mdConfirm
     output:
-        path('./AFPAP_output')
+        path("./$params.inputBaseName")
     script:
     """
     echo $saConfirm $pfamConfirm $structConfirm $pocketConfirm $mutationConfirm $mdConfirm >> $outDir/work/ah.txt
@@ -284,11 +287,10 @@ workflow {
 
     validateParameters()
 
-    configurePipeline()
-    pipeline_ch = configurePipeline.out
-
     if (!params.fasta && params.pdb) {
         pdb_ch = Channel.fromPath(params.pdb)
+        configurePipeline(pdb_ch)
+        pipeline_ch = configurePipeline.out
         getFASTAfromPDB(pdb_ch, pipeline_ch)
         fasta_ch = getFASTAfromPDB.out
     }
@@ -298,6 +300,10 @@ workflow {
             exit 1
         }
         else {
+            fasta_ch = Channel.fromPath(params.fasta)
+            configurePipeline(fasta_ch)
+            pipeline_ch = configurePipeline.out
+
             log.warn'Predict structure...'
             exit 1
         }
@@ -305,6 +311,8 @@ workflow {
     else {
         fasta_ch = Channel.fromPath(params.fasta)
         pdb_ch = Channel.fromPath(params.pdb)
+        configurePipeline(pdb_ch)
+        pipeline_ch = configurePipeline.out
     }
 
     if (!params.skipSequenceAnalysis) {
@@ -316,8 +324,8 @@ workflow {
     }
 
     if (!params.skipPfamSearch) {
-        PfamSearch(fasta_ch, pipeline_ch)
-        pfam_ch = PfamSearch.out
+        pfamSearch(fasta_ch, pipeline_ch)
+        pfam_ch = pfamSearch.out
     }
     else {
         pfam_ch = Channel.from(0)
@@ -327,8 +335,8 @@ workflow {
     struct_ch = prepareStructure.out
 
     if (!params.skipPointMutations) {
-        PointMutations(pipeline_ch, struct_ch)
-        mut_ch = PointMutations.out
+        pointMutations(pipeline_ch, struct_ch)
+        mut_ch = pointMutations.out
     }
     else {
         mut_ch = Channel.from(0)
