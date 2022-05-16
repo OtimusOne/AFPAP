@@ -26,8 +26,8 @@
 ### Prerequisites
 
 <ul>
-<li>Python >= 3.6</li>
-<li>Java >= 8</li>
+<li>Python >= 3.8</li>
+<li>Java >= 11</li>
 <li>git, pip, conda</li>
 </ul>
 
@@ -56,11 +56,10 @@ params {
 }
 ```
 ### Optional component - AlphaFold:
-- AlphaFold is used to predicted the protein structure if a PDB file is not provided.
+- AlphaFold is used to predicted the protein structure if a PDB file is not provided. We use the LocalColabFold implementation in order to avoid the large databases used by native AlphaFold.
 - Follow the install intructions:
-    - https://github.com/deepmind/alphafold
-    - https://github.com/kalininalab/alphafold_non_docker
-- If AlphaFold is not installed the user must provide a PDB structure using the *--pdb* argument. Set *skipAlphaFold = true* inside **nextflow.config**.
+    - https://github.com/YoshitakaMo/localcolabfold
+- If ColabFold is not installed the user must provide a PDB structure using the *--pdb* argument if structural analysis is desired. Set *skipAlphaFold = true* inside **nextflow.config**.
 
 ### Optional component - Pfam:
 - The Pfam database is used to match the protein sequence agains protein families.
@@ -74,7 +73,7 @@ conda install pfam_scan perl-json
 ```
 params {
     ...
-    Pfam_PATH="/path/to/Pfam/"
+    Pfam_PATH="/path/to/Pfam/directory"
     ...
 }
 ```

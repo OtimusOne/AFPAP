@@ -76,9 +76,10 @@ def main():
     parser.add_argument("-r", "--receptor", required=True, help="Receptor")
     parser.add_argument("-l", "--ligand", required=True, help="Ligand")
     parser.add_argument("-n", "--name", default='ligand', help="Ligand name")
-    parser.add_argument("-e", "--exhaustiveness", help="Exhaustiveness", default=8)
-    parser.add_argument("--box_size", help="Box size", default=20)
-    parser.add_argument("--spacing", help="Spacing", default=0.375)
+    parser.add_argument("-e", "--exhaustiveness", type=int, help="Exhaustiveness", default=8)
+    parser.add_argument("--box_size", type=int, help="Box size", default=20)
+    parser.add_argument("--spacing", type=float, help="Spacing", default=0.375)
+    parser.add_argument('--dock_pockets', action="count", help="Dock ligand to predicted pockets")
 
     args = parser.parse_args()
     console_logger = logging.StreamHandler()
@@ -96,16 +97,19 @@ def main():
     md_exhaustiveness = int(args.exhaustiveness)
     md_box_size = int(args.box_size)
     md_spacing = float(args.spacing)
+
     logging.info("Molecular docking ligand %s...", args.name)
     with open(f'{args.outputDir}/work/multiqc_files/molecular_docking_{args.name}_mqc.txt', 'w', encoding="utf8") as mqc_file:
         with open(f'{args.AFPAPpath}/config/molecularDocking_template.txt', 'r', encoding="utf8") as template:
             template_data = template.read()
             template_data = template_data.replace('--ligand--', args.name)
             print(template_data, file=mqc_file)
-        
+
         with open(f'{args.outputDir}/work/docking/{args.name}/generate_complex.pml', 'a', encoding="utf8") as pml:
             print("set retain_order\nset pdb_retain_ids", file=pml)
-            if os.path.exists(f"{args.outputDir}/work/p2rank_predictions.csv"):
+
+            if args.dock_pockets and os.path.exists(f"{args.outputDir}/work/p2rank_predictions.csv"):
+                logging.info("%s - Pocket docking...", args.name)
                 p2rank_precitions = pd.read_csv(f"{args.outputDir}/work/p2rank_predictions.csv")
                 for i, row in p2rank_precitions.iterrows():
                     logging.info("%s - Docking pocket %d/%d...", args.name, i+1, p2rank_precitions.shape[0])
@@ -140,7 +144,7 @@ def main():
             print('delete all', file=pml)
 
             print('Blind docking', best_score, f"{mean_score} \u00B1 {std_score}", f"{np.round(center_x,2)},{np.round(center_y,2)},{np.round(center_z,2)}",
-                f"{int(box_x)},{int(box_y)},{int(box_z)}", 1, md_exhaustiveness, sep='\t', file=mqc_file)
+                  f"{int(box_x)},{int(box_y)},{int(box_z)}", 1, md_exhaustiveness, sep='\t', file=mqc_file)
 
 
 if __name__ == '__main__':

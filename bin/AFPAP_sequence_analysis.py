@@ -134,7 +134,7 @@ def section_sequence_properties(protein_sequence, args):
 
     with open(f'{args.outputDir}/work/multiqc_files/seq_atom_count.txt', 'w', encoding="utf8") as mqc_file:
         atom_sting = "Atom\t"
-        count_string = "Count\t"
+        count_string = "Atom\t"
         for atom, count in atom_count.items():
             atom_sting += f"{atom}\t"
             count_string += f"{count}\t"
