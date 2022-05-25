@@ -84,7 +84,7 @@ def main():
             template_data = template_data.replace("---tableSimBaSYM---", sym_table_body)
             with open(f'{args.outputDir}/work/multiqc_files/mutation_mqc.html', 'w', encoding="utf8") as mqc_file:
                 print(template_data, file=mqc_file)
-        mutation_result.to_csv(f"{args.outputDir}/work/SimBa_predictions.csv", index=False)
+        mutation_result.to_csv(f"{args.outputDir}/work/SimBa2_predictions.csv", index=False)
 
 
 if __name__ == '__main__':

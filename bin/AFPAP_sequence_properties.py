@@ -1,5 +1,5 @@
 '''
-# File name: AFPAP_sequence_analysis.py
+# File name: AFPAP_sequence_properties.py
 # Description: Python script for generating MultiQC report sequence analysis section.
 # Author: Maghiar Octavian
 # Date: 04-04-2022

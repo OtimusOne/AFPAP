@@ -38,7 +38,7 @@ conda config --env --add channels anaconda
 conda config --env --add channels bioconda
 
 conda install 'numpy>=1.18.5' 'pandas>=1.4.1' 'biopython>=1.76' 'multiqc>=1.12' pymol-open-source=2.5.0
-sudo apt-get install dssp
+conda install -c salilab dssp=3.0.0
 ```
 - Install Nextflow and add the executable to PATH: https://github.com/nextflow-io/nextflow
 ```
@@ -47,13 +47,6 @@ curl -fsSL https://get.nextflow.io | bash
 - Clone this repository:
 ```
 git clone https://github.com/OtimusOne/AFPAP.git
-```
- - After installation set the path variable inside **nextflow.config**:
-```
-params {
-    AFPAP_PATH="/path/to/AFPAP/root"
-    ...
-}
 ```
 ### Optional component - AlphaFold:
 - AlphaFold is used to predicted the protein structure if a PDB file is not provided. We use the LocalColabFold implementation in order to avoid the large databases used by native AlphaFold.
@@ -73,7 +66,7 @@ conda install pfam_scan perl-json
 ```
 params {
     ...
-    Pfam_PATH="/path/to/Pfam/directory"
+    pfam_path="/path/to/Pfam/directory"
     ...
 }
 ```

@@ -19,14 +19,15 @@ def helpMessage() {
     If a sequence fasta file is provided the structure will be predicted using AlphaFold.
     If a pdb file is provided the sequence will be extracted from the structure.
 
-    --AFPAP_PATH <path>             Path to AFPAP root directory
-                                    Should be set in nexflow.config before first use
-
     Optional arguments:
     --outputDir <path>              Output directory (default './output')
 
-    --Pfam_PATH <path>              Path to Pfam-A.hmm file.
+    --pfam_path <path>              Path to the Pfam-A.hmm file
                                     Should be set in nexflow.config before first use
+
+    --colabfoldArgs <args>          Agruments to be used by ColabFold
+                                    (default "--amber --use-gpu-relax --templates --num-recycle 3
+                                              --num-models 5")
 
     --ligands <path>                List of ligands in .pdb or .mol2 formats (default false)
                                     ex. --ligands "path/to/ligand1.pdb path/to/ligand2.mol2"
@@ -42,15 +43,15 @@ def helpMessage() {
 
     --pdb_type <0/1/2>              PDB file type, AlphaFold - 0, X-ray - 1, other - 2 (default 0)
 
-    --skipSequenceAnalysis <0/1>    Skip sequence analysis (default false)
+    --skipSequenceProperties <0/1>  Skip sequence properties (default false)
 
     --skipPfamSearch <0/1>          Skip Pfam search (default false)
 
-    --skipStructuralAnalysis <0/1>  Skip structual analysis (default false)
+    --skipStructuralAnalysis <0/1>  Skip structural analysis (default false)
 
     --skipAlphaFold <0/1>           Skip AlphaFold structure prediction (default false)
 
-    --skipStructureViewer <0/1>     Skip raport 3D structure viewer (default false)
+    --skipStructureViewer <0/1>     Skip report iCn3D structure viewer (default false)
 
     --skipPocketPrediction <0/1>    Skip pocket prediction (default false)
 
@@ -58,7 +59,7 @@ def helpMessage() {
 
     --skipMolecularDocking <0/1>    Skip molecular docking (default false)
 
-    --skipMultiQC <0/1>             Skip MultiQC raport generation (default false)
+    --skipMultiQC <0/1>             Skip MultiQC report generation (default false)
 
     --help                          This usage statement
     """
@@ -99,8 +100,8 @@ def validateParameters() {
         log.error'skipAlphaFold must be 0/1!'
         exit 1
     }
-    if (!validBool.contains(params.skipSequenceAnalysis)) {
-        log.error'skipSequenceAnalysis must be 0/1!'
+    if (!validBool.contains(params.skipSequenceProperties)) {
+        log.error'skipSequenceProperties must be 0/1!'
         exit 1
     }
     if (!validBool.contains(params.skipPfamSearch)) {
@@ -127,7 +128,7 @@ def validateParameters() {
         log.error'skipMultiQC must be 0/1!'
         exit 1
     }
-    paramList = ['AFPAP_PATH', 'Pfam_PATH', 'fasta', 'pdb', 'outputDir', 'output-dir', 'help', 'ligands', 'dock_pockets', 'md_exhaustiveness', 'md_box_size', 'md_spacing', 'colabfoldArgs', 'colabfold-args', 'pdb_type', 'skipAlphaFold', 'skip-alpha-fold', 'skipStructuralAnalysis', 'skip-structural-analysis', 'skipSequenceAnalysis', 'skip-sequence-analysis', 'skipPfamSearch', 'skip-pfam-search', 'skipStructureViewer', 'skip-structure-viewer', 'skipPointMutations', 'skip-point-mutations', 'skipMolecularDocking', 'skip-molecular-docking', 'skipMultiQC', 'skip-multi-QC', 'skip-pocket-prediction', 'skipPocketPrediction']
+    paramList = ['pfam_path', 'fasta', 'pdb', 'outputDir', 'output-dir', 'help', 'ligands', 'dock_pockets', 'md_exhaustiveness', 'md_box_size', 'md_spacing', 'colabfoldArgs', 'colabfold-args', 'pdb_type', 'skipAlphaFold', 'skip-alpha-fold', 'skipStructuralAnalysis', 'skip-structural-analysis', 'skipSequenceProperties', 'skip-sequence-properties', 'skipPfamSearch', 'skip-pfam-search', 'skipStructureViewer', 'skip-structure-viewer', 'skipPointMutations', 'skip-point-mutations', 'skipMolecularDocking', 'skip-molecular-docking', 'skipMultiQC', 'skip-multi-QC', 'skip-pocket-prediction', 'skipPocketPrediction']
     for (parameter in params) {
         if (!paramList.contains(parameter.key)) {
             log.warn"Unknown parameter ${parameter.key}..."
@@ -161,7 +162,7 @@ process getFASTAfromPDB {
         path "$outDir/${params.inputBaseName}.fasta"
     script:
     """
-    python "$params.AFPAP_PATH/bin/AFPAP_FASTA_from_PDB.py" -i $pdbFile -n "${params.inputBaseName}.fasta" -o $outDir
+    python "$projectDir/bin/AFPAP_FASTA_from_PDB.py" -i $pdbFile -n "${params.inputBaseName}.fasta" -o $outDir
     """
 }
 
@@ -175,16 +176,16 @@ process predictPDB {
     """
     colabfold_batch $params.colabfoldArgs $fastaFile $outDir/work/alphafold
 
-    if [[ -n `find $outDir/work/alphafold -name "*_relaxed_rank_1*.pdb"` ]]
+    if [[ -n `find $outDir/work/alphafold -name "*_relaxed_rank_1*.pdb" -print -quit` ]]
     then
-        cp `find $outDir/work/alphafold -name "*_relaxed_rank_1*.pdb"` "$outDir/${params.inputBaseName}.pdb"
+        cp `find $outDir/work/alphafold -name "*_relaxed_rank_1*.pdb" -print -quit` "$outDir/${params.inputBaseName}.pdb"
     else
-        cp `find $outDir/work/alphafold -name "*_unrelaxed_rank_1*.pdb"` "$outDir/${params.inputBaseName}.pdb"
+        cp `find $outDir/work/alphafold -name "*_unrelaxed_rank_1*.pdb" -print -quit` "$outDir/${params.inputBaseName}.pdb"
     fi
     """
 }
 
-process sequenceAnalysis {
+process sequenceProperties {
     input:
         path fastaFile
         path outDir
@@ -192,7 +193,7 @@ process sequenceAnalysis {
         val 0
     script:
     """
-    python "$params.AFPAP_PATH/bin/AFPAP_sequence_analysis.py" -i $fastaFile -o $outDir --AFPAPpath $params.AFPAP_PATH
+    python "$projectDir/bin/AFPAP_sequence_properties.py" -i $fastaFile -o $outDir --AFPAPpath $projectDir
     """
 }
 
@@ -204,8 +205,8 @@ process pfamSearch {
         val 0
     script:
     """
-    pfam_scan.pl -clan_overlap -align -json pretty -fasta $fastaFile -dir $params.Pfam_PATH > "$outDir/work/pfam.json"
-    python "$params.AFPAP_PATH/bin/AFPAP_pfam.py" -j "$outDir/work/pfam.json" -o $outDir --AFPAPpath $params.AFPAP_PATH
+    pfam_scan.pl -clan_overlap -align -json pretty -fasta $fastaFile -dir $params.pfam_path > "$outDir/work/${params.inputBaseName}_pfam.json"
+    python "$projectDir/bin/AFPAP_pfam.py" -j "$outDir/work/${params.inputBaseName}_pfam.json" -o $outDir --AFPAPpath $projectDir
     """
 }
 
@@ -217,15 +218,16 @@ process prepareStructure {
         val 0
     script:
     """
-    python "$params.AFPAP_PATH/bin/AFPAP_secondary_structure.py" -i "$outDir/${params.inputBaseName}.pdb" -o $outDir --name "${params.inputBaseName}_fixed.pdb" --AFPAPpath $params.AFPAP_PATH
+    python "$projectDir/bin/AFPAP_secondary_structure.py" -i "$outDir/${params.inputBaseName}.pdb" -o $outDir --name "${params.inputBaseName}_fixed.pdb" --AFPAPpath $projectDir
     if [ "$params.skipStructureViewer" != "true" ] && [ "$params.skipStructureViewer" != 1 ] ; then
-        python "$params.AFPAP_PATH/bin/AFPAP_structure_viewer.py" -i "$outDir/work/"${params.inputBaseName}_fixed.pdb"" -o $outDir --AFPAPpath $params.AFPAP_PATH --pdb_type $params.pdb_type
+        python "$projectDir/bin/AFPAP_structure_viewer.py" -i "$outDir/work/${params.inputBaseName}_fixed.pdb" -o $outDir --AFPAPpath $projectDir --pdb_type $params.pdb_type
     fi
     if ( [ "$params.skipMolecularDocking" != "true" ] && [ "$params.skipMolecularDocking" != 1 ] ) && ( [ "$params.ligands" != "false" ] && [ "$params.ligands" != 0 ] ) ; then
         cp "$outDir/work/${params.inputBaseName}_fixed.pdb" "$outDir/work/docking/receptor.pdb"
         cd "$outDir/work/docking"
         prepare_receptor -r receptor.pdb -o receptor_temp.pdbqt -e
         prepare_receptor -r receptor_temp.pdbqt -o receptor.pdbqt -A "hydrogens" -e
+        rm receptor_temp.pdbqt receptor.pdb
     fi
     """
 }
@@ -238,7 +240,7 @@ process pointMutations {
         val 0
     script:
     """
-    python "$params.AFPAP_PATH/bin/AFPAP_point_mutations.py" -i "$outDir/work/${params.inputBaseName}_fixed.pdb" -o $outDir --AFPAPpath $params.AFPAP_PATH
+    python "$projectDir/bin/AFPAP_point_mutations.py" -i "$outDir/work/${params.inputBaseName}_fixed.pdb" -o $outDir --AFPAPpath $projectDir
     """
 }
 
@@ -257,9 +259,11 @@ process pocketPrediction {
     }
     """
     prank predict -f "$outDir/work/${params.inputBaseName}_fixed.pdb" -o "$outDir/work" $predictionMode
-    python "$params.AFPAP_PATH/bin/AFPAP_p2rank_visualization.py" -p "$outDir/work/visualizations/${params.inputBaseName}_fixed.pdb.pml" --csv "$outDir/work/${params.inputBaseName}_fixed.pdb_predictions.csv" -o $outDir --AFPAPpath $params.AFPAP_PATH
+    python "$projectDir/bin/AFPAP_p2rank_visualization.py" -p "$outDir/work/visualizations/${params.inputBaseName}_fixed.pdb.pml" --csv "$outDir/work/${params.inputBaseName}_fixed.pdb_predictions.csv" -o $outDir --AFPAPpath $projectDir
     (cd "$outDir/work/visualizations"; pymol -cq "${params.inputBaseName}_fixed.pdb.pml")
-    python "$params.AFPAP_PATH/bin/AFPAP_p2rank_gallery.py" -o $outDir --AFPAPpath $params.AFPAP_PATH
+    python "$projectDir/bin/AFPAP_p2rank_gallery.py" -o $outDir --AFPAPpath $projectDir
+    mv "$outDir/work/run.log" "$outDir/work/visualizations/run.log"
+    mv "$outDir/work/params.txt" "$outDir/work/visualizations/params.txt"
     """
 }
 
@@ -283,7 +287,7 @@ process molecularDocking {
         cp $ligandFile "$outDir/work/docking/"
         mkdir -p "$outDir/work/docking/${ligandFile.baseName}"
         prepare_ligand -l $ligandFile -o "$outDir/work/docking/${ligandFile.baseName}/${ligandFile.baseName}.pdbqt"
-        python "$params.AFPAP_PATH/bin/AFPAP_molecular_docking.py" -r "$outDir/work/docking/receptor.pdbqt" -l "$outDir/work/docking/${ligandFile.baseName}/${ligandFile.baseName}.pdbqt" -n "${ligandFile.baseName}" $dockMode --exhaustiveness $params.md_exhaustiveness --box_size $params.md_box_size --spacing $params.md_spacing -o $outDir --AFPAPpath $params.AFPAP_PATH
+        python "$projectDir/bin/AFPAP_molecular_docking.py" -r "$outDir/work/docking/receptor.pdbqt" -l "$outDir/work/docking/${ligandFile.baseName}/${ligandFile.baseName}.pdbqt" -n "${ligandFile.baseName}" $dockMode --exhaustiveness $params.md_exhaustiveness --box_size $params.md_box_size --spacing $params.md_spacing -o $outDir --AFPAPpath $projectDir
         cd "$outDir/work/docking/${ligandFile.baseName}"
         pymol -cq generate_complex.pml
         """
@@ -309,10 +313,10 @@ process processPipelineOutput {
     output:
         path("./$params.inputBaseName")
     script:
+    //echo $saConfirm $pfamConfirm $structConfirm $pocketConfirm $mutationConfirm $mdConfirm >> $outDir/work/ah.txt
     """
-    echo $saConfirm $pfamConfirm $structConfirm $pocketConfirm $mutationConfirm $mdConfirm >> $outDir/work/ah.txt
     if [ "$params.skipMultiQC" != "true" ] && [ "$params.skipMultiQC" != 1 ] ; then
-        multiqc -f -c "$params.AFPAP_PATH/config/multiqc_config.yaml" --custom-css-file "$params.AFPAP_PATH/config/multiqc_custom_css.css" -o $outDir "$outDir/work/" 
+        multiqc -f -c "$projectDir/config/multiqc_config.yaml" --custom-css-file "$projectDir/config/multiqc_custom_css.css" -o $outDir "$outDir/work/" 
     fi
     """
 }
@@ -359,9 +363,9 @@ workflow {
         pipeline_ch = configurePipeline.out
     }
 
-    if (!params.skipSequenceAnalysis) {
-        sequenceAnalysis(fasta_ch, pipeline_ch)
-        sa_ch = sequenceAnalysis.out
+    if (!params.skipSequenceProperties) {
+        sequenceProperties(fasta_ch, pipeline_ch)
+        sa_ch = sequenceProperties.out
     }
     else {
         sa_ch = Channel.from(0)
