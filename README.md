@@ -26,9 +26,9 @@
 ### Prerequisites
 
 <ul>
-<li>Python >= 3.8</li>
-<li>Java >= 11</li>
-<li>git, pip, conda</li>
+<li>Python  ≥ 3.8</li>
+<li>Java  ≥ 11</li>
+<li>git, pip, conda/mamba</li>
 </ul>
 
 ### Mandatory installation:
@@ -70,7 +70,22 @@ params {
     ...
 }
 ```
-- If Pfam is not installed set *skipPfamSearch = true* inside **nextflow.config**.
+- If Pfam is not used set *skipPfamSearch = true* inside **nextflow.config**.
+
+### Optional component - MSA:
+- Install Blast, Muscle and CD-HIT
+```
+conda install blast muscle cd-hit
+```
+- Create a database directory and export the path variable
+```
+export BLASTDB=/path/to/directory
+```
+- Inside the BLASTDB directory download UniRef90 and setup the Blast database. https://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/
+```
+curl {https://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz} | gunzip | makeblastdb -out uniref90 -dbtype prot -title UniRef90 -parse_seqids
+```
+- If UniRef90 is not used set *skipMSA = true* inside **nextflow.config**.
 
 ### Optional component - SimBa2:
 - SimBa2 is used to predict the effect of point mutation on protein stability.

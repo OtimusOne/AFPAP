@@ -88,8 +88,6 @@ def main():
     logging.info("P2Rank Pocket Viewer...")
 
     p2rank_predictions = pd.read_csv(f"{args.outputDir}/work/p2rank_predictions.csv")
-    if p2rank_predictions.shape[0] == 0:
-        return
 
     pocket_images = ["p2rank_1.png", "p2rank_2.png", "p2rank_3.png",
                      "p2rank_4.png", "p2rank_5.png", "p2rank_6.png",
@@ -106,8 +104,11 @@ def main():
         template_data = template.read()
         colors = create_pocket_color_spectrum(p2rank_predictions.shape[0], 0.6, 0.6, 1.2)
         pocket_description = "<span class=\"pocketDescription\">"
-        for i in range(p2rank_predictions.shape[0]):
-            pocket_description += f"<span class=\"pocketDescriptionSpan\">Pocket{i+1}<span class=\"pocketDescriptionBullet\" style=\"color:rgb({colors[i][0]*255},{colors[i][1]*255},{colors[i][2]*255});\">&#11044</span></span>\t "
+        if p2rank_predictions.shape[0] != 0:
+            for i in range(p2rank_predictions.shape[0]):
+                pocket_description += f"<span class=\"pocketDescriptionSpan\">Pocket{i+1}<span class=\"pocketDescriptionBullet\" style=\"color:rgb({colors[i][0]*255},{colors[i][1]*255},{colors[i][2]*255});\">&#11044</span></span>\t "
+        else:
+            pocket_description += "No binding pocket detected!"
         pocket_description += "</span>"
         template_data = template_data.replace("--pocketColors--", pocket_description)
 

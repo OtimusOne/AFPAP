@@ -46,6 +46,7 @@ def main():
     p2rank_predictions = p2rank_predictions.applymap(lambda x: x.strip() if isinstance(x, str) else x)
     p2rank_predictions.columns = ["Name", "Rank", "Score", "Probability", "SAS points", "Surface atoms", "Center X", "Center Y", "Center Z"]
     p2rank_predictions.to_csv(f"{args.outputDir}/work/p2rank_predictions.csv", index=False)
+    p2rank_predictions.to_csv(f"{args.outputDir}/work/multiqc_files/p2rank_predictions.csv", index=False)
 
 
 if __name__ == '__main__':

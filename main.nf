@@ -47,6 +47,8 @@ def helpMessage() {
 
     --skipPfamSearch <0/1>          Skip Pfam search (default false)
 
+    --skipMSA <0/1>                 Skip UniRef90 Multiple Sequence Alignment (default false)
+
     --skipStructuralAnalysis <0/1>  Skip structural analysis (default false)
 
     --skipAlphaFold <0/1>           Skip AlphaFold structure prediction (default false)
@@ -128,7 +130,7 @@ def validateParameters() {
         log.error'skipMultiQC must be 0/1!'
         exit 1
     }
-    paramList = ['pfam_path', 'fasta', 'pdb', 'outputDir', 'output-dir', 'help', 'ligands', 'dock_pockets', 'md_exhaustiveness', 'md_box_size', 'md_spacing', 'colabfoldArgs', 'colabfold-args', 'pdb_type', 'skipAlphaFold', 'skip-alpha-fold', 'skipStructuralAnalysis', 'skip-structural-analysis', 'skipSequenceProperties', 'skip-sequence-properties', 'skipPfamSearch', 'skip-pfam-search', 'skipStructureViewer', 'skip-structure-viewer', 'skipPointMutations', 'skip-point-mutations', 'skipMolecularDocking', 'skip-molecular-docking', 'skipMultiQC', 'skip-multi-QC', 'skip-pocket-prediction', 'skipPocketPrediction']
+    paramList = ['pfam_path', 'fasta', 'pdb', 'outputDir', 'output-dir', 'help', 'ligands', 'dock_pockets', 'md_exhaustiveness', 'md_box_size', 'md_spacing', 'colabfoldArgs', 'colabfold-args', 'pdb_type', 'skipAlphaFold', 'skip-alpha-fold', 'skipStructuralAnalysis', 'skip-structural-analysis', 'skipSequenceProperties', 'skip-sequence-properties', 'skipPfamSearch', 'skip-pfam-search', 'skipMSA', 'skip-MSA', 'skipStructureViewer', 'skip-structure-viewer', 'skipPointMutations', 'skip-point-mutations', 'skipMolecularDocking', 'skip-molecular-docking', 'skipMultiQC', 'skip-multi-QC', 'skip-pocket-prediction', 'skipPocketPrediction']
     for (parameter in params) {
         if (!paramList.contains(parameter.key)) {
             log.warn"Unknown parameter ${parameter.key}..."
@@ -209,6 +211,63 @@ process pfamSearch {
     python "$projectDir/bin/AFPAP_pfam.py" -j "$outDir/work/${params.inputBaseName}_pfam.json" -o $outDir --AFPAPpath $projectDir
     """
 }
+
+
+process conservationMSA {
+    input:
+        path fastaFile
+        path outDir
+    output:
+        val 0
+    script:
+    """
+    alignment_file="$outDir/work/${params.inputBaseName}.uniref90.txt"
+    blastResFile="$outDir/work/${params.inputBaseName}.blast.txt"
+    muscleAlignment="$outDir/work/${params.inputBaseName}.muscle.txt"
+    scores_file="$outDir/work/multiqc_files/${params.inputBaseName}.conservation.txt"
+
+    # Create bunch of temp files.
+    modifiedInputFile="\$(tempfile)"
+    blastSeq="\$(tempfile)"
+    blastTempFile="\$(tempfile)"
+    muscleTempFile="\$(tempfile)"
+
+    # Function that searches a database and filters the results
+
+    db="uniref90"
+
+    # Run PSI-BLAST to find ids all similar sequences.
+    psiblast < $fastaFile -db "\${db}" -outfmt '6 sallseqid qcovs pident' -evalue 1e-5 -num_threads 12 -num_iterations 1 | tee "\${alignment_file}" | $projectDir/bin/MSA_filter_BLAST.awk > "\${blastResFile}"
+
+    # Get full sequences.
+    blastdbcmd -db "\${db}" -entry_batch "\${blastResFile}" > "\${blastSeq}"
+    cat "\${blastResFile}" > temp.txt
+    # Filter using CD-HIT.
+    cd-hit -i "\${blastSeq}" -o "\${blastResFile}" >&2
+
+    numSeq=`grep < "\${blastResFile}" '^>' | wc -l`
+    echo Found "\${numSeq}" sequences in "\${db}"
+    if (( "\${numSeq}" >= 10 )); then
+        # Change the description from the file to find it later.
+        sed < $fastaFile 's/^>/>query_sekvence|/' > "\${modifiedInputFile}"
+
+        # Run muscle. Note we need to concat the query sequence in order to get its conservation later.
+        cat "\${modifiedInputFile}" "\${blastResFile}" > "\${blastTempFile}"
+        muscle -align "\${blastTempFile}" -output "\${muscleTempFile}"
+        awk -f $projectDir/bin/MSA_sort_MUSCLE.awk < "\${muscleTempFile}" > "\${muscleAlignment}"
+
+
+        python $projectDir/bin/score_conservation.py -m $projectDir/config/blosum62.bla "\${muscleAlignment}" > "\${scores_file}"
+    else
+        echo "Too few hits, skipping alignment..."
+    fi
+    rm "\${modifiedInputFile}"
+    rm "\${blastSeq}"
+    rm "\${blastTempFile}"
+    rm "\${muscleTempFile}"
+    """
+}
+
 
 process prepareStructure {
     input:
@@ -306,6 +365,7 @@ process processPipelineOutput {
         path outDir
         val saConfirm
         val pfamConfirm
+        val msaConfirm
         val structConfirm
         val pocketConfirm
         val mutationConfirm
@@ -316,7 +376,7 @@ process processPipelineOutput {
     //echo $saConfirm $pfamConfirm $structConfirm $pocketConfirm $mutationConfirm $mdConfirm >> $outDir/work/ah.txt
     """
     if [ "$params.skipMultiQC" != "true" ] && [ "$params.skipMultiQC" != 1 ] ; then
-        multiqc -f -c "$projectDir/config/multiqc_config.yaml" --custom-css-file "$projectDir/config/multiqc_custom_css.css" -o $outDir "$outDir/work/" 
+        multiqc -f -c "$projectDir/config/multiqc_config.yaml" --custom-css-file "$projectDir/config/multiqc_custom_css.css" -o $outDir "$outDir/work/multiqc_files" 
     fi
     """
 }
@@ -379,6 +439,14 @@ workflow {
         pfam_ch = Channel.from(0)
     }
 
+    if (!params.skipMSA) {
+        conservationMSA(fasta_ch, pipeline_ch)
+        msa_ch = conservationMSA.out
+    }
+    else {
+        msa_ch = Channel.from(0)
+    }
+
     if (!params.skipStructuralAnalysis) {
         prepareStructure(pdb_ch, pipeline_ch)
         struct_ch = prepareStructure.out
@@ -412,5 +480,5 @@ workflow {
         md_ch = Channel.from(0)
     }
 
-    processPipelineOutput(pipeline_ch, sa_ch, pfam_ch, struct_ch, pp_ch, mut_ch, md_ch)
+    processPipelineOutput(pipeline_ch, sa_ch, pfam_ch, msa_ch, struct_ch, pp_ch, mut_ch, md_ch)
 }

@@ -107,7 +107,23 @@ custom_data:
             ylab: 'Hydrophobicity'
             height: '250'    
 
-    
+    msa:
+        parent_id: evolutionary_analysis
+        parent_name: 'Evolutionary Analysis'
+        parent_description: ''
+        id: 'msa'
+        section_name: 'MSA - Sequence conservation'
+        plot_type: 'linegraph'
+        pconfig:
+            id: 'msa_plot'
+            namespace: 'msa'
+            title: 'UniRef90 Conservation'
+            xlab: 'residue'
+            ylab: 'Jense-Shannon divergence'
+            height: '250'
+            tt_label: '{point.x:.0f}: {point.y:.4f}'
+
+
     p2rank:
         parent_id: molecular_docking
         parent_name: "Molecular Docking"
@@ -157,6 +173,8 @@ sp:
         fn: 'seq_residue_count.txt'
     atom_count:
         fn: 'seq_atom_count.txt'
+    msa:
+        fn: '*.conservation.txt'
     p2rank:
         fn: 'p2rank_predictions.csv'
 
@@ -167,6 +185,8 @@ report_section_order:
         order: -101
     evolutionary_analysis:
         order: -200
+    pfam:
+        order: -202
     pfam:
         order: -201
     structure_analysis:
