@@ -2,13 +2,13 @@
     printSeq=0
 }
 
-/^>query_sekvence/{
+/^>input_sequence/{
     printSeq=1
 }
 
 {
     if (printSeq) {
-        sub("query_sekvence[|]", "", $0)
+        sub("input_sequence[|]", "", $0)
         print
     } else {
         if (rest) {

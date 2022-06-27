@@ -117,9 +117,9 @@ custom_data:
         pconfig:
             id: 'msa_plot'
             namespace: 'msa'
-            title: 'UniRef90 Conservation'
+            title: 'Sequence Conservation'
             xlab: 'residue'
-            ylab: 'Jense-Shannon divergence'
+            ylab: 'Jensen-Shannon divergence'
             height: '250'
             tt_label: '{point.x:.0f}: {point.y:.4f}'
 
@@ -174,7 +174,7 @@ sp:
     atom_count:
         fn: 'seq_atom_count.txt'
     msa:
-        fn: '*.conservation.txt'
+        fn: '*.conservation'
     p2rank:
         fn: 'p2rank_predictions.csv'
 

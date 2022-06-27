@@ -72,20 +72,24 @@ params {
 ```
 - If Pfam is not used set *skipPfamSearch = true* inside **nextflow.config**.
 
-### Optional component - MSA:
+### Optional component - Conservation MSA:
 - Install Blast, Muscle and CD-HIT
 ```
 conda install blast muscle cd-hit
 ```
-- Create a database directory and export the path variable
+- Create a BLAST database from which to generate the MSA file. You can use any FASTA database such as SwissProt/TrEMBL/UniRef50/UniRef90 (*warning: SwissProt might not return enough hits to calculate the sequence conservation*). Example setting UniRef90 up as a Blast database: https://ftp.uniprot.org/pub/databases/uniprot/current_release/uniref/uniref90/
 ```
-export BLASTDB=/path/to/directory
+curl {https://ftp.uniprot.org/pub/databases/uniprot/current_release/uniref/uniref90/uniref90.fasta.gz} | gunzip | makeblastdb -out uniref90 -dbtype prot -title UniRef90 -parse_seqids
 ```
-- Inside the BLASTDB directory download UniRef90 and setup the Blast database. https://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/
+- Set path variable inside **nextflow.config**
 ```
-curl {https://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz} | gunzip | makeblastdb -out uniref90 -dbtype prot -title UniRef90 -parse_seqids
+params {
+    ...
+    blast_path="/path/to/BLASTDB/uniref90"
+    ...
+}
 ```
-- If UniRef90 is not used set *skipMSA = true* inside **nextflow.config**.
+- If this component is not used set *skipConservationMSA = true* inside **nextflow.config**.
 
 ### Optional component - SimBa2:
 - SimBa2 is used to predict the effect of point mutation on protein stability.

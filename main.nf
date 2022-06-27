@@ -1,6 +1,6 @@
 #! /usr/bin/env nextflow
 /* groovylint-disable LineLength */
-nextflow.enable.dsl = 2
+nextflow.enable.dsl=2
 
 def helpMessage() {
     log.info """
@@ -22,10 +22,16 @@ def helpMessage() {
     Optional arguments:
     --outputDir <path>              Output directory (default './output')
 
-    --pfam_path <path>              Path to the Pfam-A.hmm file
+    --pfam_path <path>              Path to the Pfam-A.hmm file directory
                                     Should be set in nexflow.config before first use
 
-    --colabfoldArgs <args>          Agruments to be used by ColabFold
+    --blastdb_path <path>           Path to the BLAST DB used for sequence conservation
+                                    Should be set in nexflow.config before first use
+
+    --blastArgs <args>              Arguments sent to PSI-BLAST
+                                    (default "-evalue 1e-5 -num_threads 8 -num_iterations 3")
+
+    --colabfoldArgs <args>          Agruments sent to ColabFold
                                     (default "--amber --use-gpu-relax --templates --num-recycle 3
                                               --num-models 5")
 
@@ -47,7 +53,7 @@ def helpMessage() {
 
     --skipPfamSearch <0/1>          Skip Pfam search (default false)
 
-    --skipMSA <0/1>                 Skip UniRef90 Multiple Sequence Alignment (default false)
+    --skipConservationMSA <0/1>     Skip Conservation & Multiple Sequence Alignment (default false)
 
     --skipStructuralAnalysis <0/1>  Skip structural analysis (default false)
 
@@ -94,10 +100,6 @@ def validateParameters() {
         log.error'dock_pockets must be 0/1!'
         exit 1
     }
-    if (!validBool.contains(params.skipStructuralAnalysis)) {
-        log.error'skipStructuralAnalysis must be 0/1!'
-        exit 1
-    }
     if (!validBool.contains(params.skipAlphaFold)) {
         log.error'skipAlphaFold must be 0/1!'
         exit 1
@@ -110,16 +112,24 @@ def validateParameters() {
         log.error'skipPfamSearch must be 0/1!'
         exit 1
     }
+    if (!validBool.contains(params.skipConservationMSA)) {
+        log.error'skipConservationMSA must be 0/1!'
+        exit 1
+    }
+    if (!validBool.contains(params.skipStructuralAnalysis)) {
+        log.error'skipStructuralAnalysis must be 0/1!'
+        exit 1
+    }
     if (!validBool.contains(params.skipStructureViewer)) {
         log.error'skipStructureViewer must be 0/1!'
         exit 1
     }
-    if (!validBool.contains(params.skipPocketPrediction)) {
-        log.error'skipPocketPrediction must be 0/1!'
-        exit 1
-    }
     if (!validBool.contains(params.skipPointMutations)) {
         log.error'skipPointMutations must be 0/1!'
+        exit 1
+    }
+    if (!validBool.contains(params.skipPocketPrediction)) {
+        log.error'skipPocketPrediction must be 0/1!'
         exit 1
     }
     if (!validBool.contains(params.skipMolecularDocking)) {
@@ -130,7 +140,7 @@ def validateParameters() {
         log.error'skipMultiQC must be 0/1!'
         exit 1
     }
-    paramList = ['pfam_path', 'fasta', 'pdb', 'outputDir', 'output-dir', 'help', 'ligands', 'dock_pockets', 'md_exhaustiveness', 'md_box_size', 'md_spacing', 'colabfoldArgs', 'colabfold-args', 'pdb_type', 'skipAlphaFold', 'skip-alpha-fold', 'skipStructuralAnalysis', 'skip-structural-analysis', 'skipSequenceProperties', 'skip-sequence-properties', 'skipPfamSearch', 'skip-pfam-search', 'skipMSA', 'skip-MSA', 'skipStructureViewer', 'skip-structure-viewer', 'skipPointMutations', 'skip-point-mutations', 'skipMolecularDocking', 'skip-molecular-docking', 'skipMultiQC', 'skip-multi-QC', 'skip-pocket-prediction', 'skipPocketPrediction']
+    paramList = ['pfam_path', 'blastdb_path', 'fasta', 'pdb', 'outputDir', 'output-dir', 'help', 'ligands', 'dock_pockets', 'md_exhaustiveness', 'md_box_size', 'md_spacing', 'blastArgs', 'blast-args', 'colabfoldArgs', 'colabfold-args', 'pdb_type', 'skipAlphaFold', 'skip-alpha-fold', 'skipStructuralAnalysis', 'skip-structural-analysis', 'skipSequenceProperties', 'skip-sequence-properties', 'skipPfamSearch', 'skip-pfam-search', 'skipConservationMSA', 'skip-conservation-MSA', 'skipStructureViewer', 'skip-structure-viewer', 'skipPointMutations', 'skip-point-mutations', 'skipMolecularDocking', 'skip-molecular-docking', 'skipMultiQC', 'skip-multi-QC', 'skip-pocket-prediction', 'skipPocketPrediction']
     for (parameter in params) {
         if (!paramList.contains(parameter.key)) {
             log.warn"Unknown parameter ${parameter.key}..."
@@ -151,6 +161,9 @@ process configurePipeline {
         mkdir -p "$params.inputBaseName/work/multiqc_files"
         if ( [ "$params.skipMolecularDocking" != "true" ] && [ "$params.skipMolecularDocking" != 1 ] ) && ( [ "$params.ligands" != "false" ] && [ "$params.ligands" != 0 ] ) ; then
             mkdir -p "$params.inputBaseName/work/docking"
+        fi
+        if ( [ "$params.skipConservationMSA" != "true" ] && [ "$params.skipConservationMSA" != 1 ] ) ; then
+            mkdir -p "$params.inputBaseName/work/MSA"
         fi
         cp $inputFile "./$params.inputBaseName/"
         """
@@ -221,48 +234,43 @@ process conservationMSA {
         val 0
     script:
     """
-    alignment_file="$outDir/work/${params.inputBaseName}.uniref90.txt"
-    blastResFile="$outDir/work/${params.inputBaseName}.blast.txt"
-    muscleAlignment="$outDir/work/${params.inputBaseName}.muscle.txt"
-    scores_file="$outDir/work/multiqc_files/${params.inputBaseName}.conservation.txt"
-
-    # Create bunch of temp files.
+    blastHits="$outDir/work/MSA/${params.inputBaseName}.hits"
+    blastSequences="\$(tempfile)"
+    blastResults="$outDir/work/MSA/${params.inputBaseName}.blast"
     modifiedInputFile="\$(tempfile)"
-    blastSeq="\$(tempfile)"
     blastTempFile="\$(tempfile)"
     muscleTempFile="\$(tempfile)"
-
-    # Function that searches a database and filters the results
-
-    db="uniref90"
+    muscleAlignment="$outDir/work/MSA/${params.inputBaseName}.muscle"
+    conservationFile="$outDir/work/MSA/${params.inputBaseName}.conservation"
 
     # Run PSI-BLAST to find ids all similar sequences.
-    psiblast < $fastaFile -db "\${db}" -outfmt '6 sallseqid qcovs pident' -evalue 1e-5 -num_threads 12 -num_iterations 1 | tee "\${alignment_file}" | $projectDir/bin/MSA_filter_BLAST.awk > "\${blastResFile}"
+    psiblast < $fastaFile -db $params.blastdb_path $params.blastArgs -outfmt '6 sallseqid qcovs pident' | $projectDir/bin/MSA_filter_BLAST.awk > "\${blastHits}"
 
     # Get full sequences.
-    blastdbcmd -db "\${db}" -entry_batch "\${blastResFile}" > "\${blastSeq}"
-    cat "\${blastResFile}" > temp.txt
-    # Filter using CD-HIT.
-    cd-hit -i "\${blastSeq}" -o "\${blastResFile}" >&2
+    blastdbcmd -db $params.blastdb_path -entry_batch "\${blastHits}" > "\${blastSequences}"
 
-    numSeq=`grep < "\${blastResFile}" '^>' | wc -l`
-    echo Found "\${numSeq}" sequences in "\${db}"
-    if (( "\${numSeq}" >= 10 )); then
+    # Filter using CD-HIT.
+    cd-hit -i "\${blastSequences}" -o "\${blastResults}" >&2
+
+    numSeq=`grep < "\${blastResults}" '^>' | wc -l`
+    echo Found "\${numSeq}" sequences in $params.blastdb_path
+
+    if (( "\${numSeq}" >= 50 )); then
         # Change the description from the file to find it later.
-        sed < $fastaFile 's/^>/>query_sekvence|/' > "\${modifiedInputFile}"
+        sed < $fastaFile 's/^>/>input_sequence|/' > "\${modifiedInputFile}"
 
         # Run muscle. Note we need to concat the query sequence in order to get its conservation later.
-        cat "\${modifiedInputFile}" "\${blastResFile}" > "\${blastTempFile}"
+        cat "\${modifiedInputFile}" "\${blastResults}" > "\${blastTempFile}"
         muscle -align "\${blastTempFile}" -output "\${muscleTempFile}"
         awk -f $projectDir/bin/MSA_sort_MUSCLE.awk < "\${muscleTempFile}" > "\${muscleAlignment}"
-
-
-        python $projectDir/bin/score_conservation.py -m $projectDir/config/blosum62.bla "\${muscleAlignment}" > "\${scores_file}"
+        
+        python $projectDir/bin/score_conservation.py -m $projectDir/config/blosum62.bla "\${muscleAlignment}" > "\${conservationFile}"
+        cp "\${conservationFile}" "$outDir/work/multiqc_files/"
     else
         echo "Too few hits, skipping alignment..."
     fi
     rm "\${modifiedInputFile}"
-    rm "\${blastSeq}"
+    rm "\${blastSequences}"
     rm "\${blastTempFile}"
     rm "\${muscleTempFile}"
     """
@@ -382,6 +390,9 @@ process processPipelineOutput {
 }
 
 workflow {
+
+    // --------- Pipeline Configuration ---------
+
     // Show help message
     if (params.help) {
         helpMessage()
@@ -423,6 +434,8 @@ workflow {
         pipeline_ch = configurePipeline.out
     }
 
+    // --------- Sequence Analysis ---------
+
     if (!params.skipSequenceProperties) {
         sequenceProperties(fasta_ch, pipeline_ch)
         sa_ch = sequenceProperties.out
@@ -439,7 +452,7 @@ workflow {
         pfam_ch = Channel.from(0)
     }
 
-    if (!params.skipMSA) {
+    if (!params.skipConservationMSA) {
         conservationMSA(fasta_ch, pipeline_ch)
         msa_ch = conservationMSA.out
     }
@@ -455,6 +468,8 @@ workflow {
         struct_ch = Channel.from(0)
     }
 
+    // --------- Structural Analysis ---------
+    
     if (!params.skipPointMutations && !params.skipStructuralAnalysis) {
         pointMutations(pipeline_ch, struct_ch)
         mut_ch = pointMutations.out
@@ -481,4 +496,9 @@ workflow {
     }
 
     processPipelineOutput(pipeline_ch, sa_ch, pfam_ch, msa_ch, struct_ch, pp_ch, mut_ch, md_ch)
+}
+
+workflow.onComplete {
+    println "Pipeline completed at: $workflow.complete"
+    println "Execution status: ${ workflow.success ? 'OK' : 'failed' }"
 }
