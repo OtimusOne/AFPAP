@@ -2,7 +2,7 @@
 # File name: AFPAP_secondary_structure.py
 # Description: Python script for generating secondary structure of pdb file
 # Author: Maghiar Octavian
-# Date: 04-04-2022
+# Date: 30-06-2022
 '''
 import argparse
 import logging
@@ -76,7 +76,7 @@ def main():
     file_logger.setLevel(logging.INFO)
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s [%(name)s] %(levelname)-8.8s - %(message)s",
+        format="%(asctime)s [%(name)s] %(levelname)s - %(message)s",
         handlers=[
             file_logger,
             console_logger
@@ -124,6 +124,8 @@ def main():
 
             else:
                 print(pdb_data, file=pdb_secondary_structure_file)
+    logging.info("Secondary structure calculation completed.")
+    return 0
 
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@
 # File name: AFPAP_p2rank_visualization.py
 # Description: Python script for parsing P2Rank output
 # Author: Maghiar Octavian
-# Date: 04-04-2022
+# Date: 30-06-2022
 '''
 import argparse
 import logging
@@ -28,13 +28,13 @@ def main():
     file_logger.setLevel(logging.INFO)
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s [%(name)s] %(levelname)-8.8s - %(message)s",
+        format="%(asctime)s [%(name)s] %(levelname)s - %(message)s",
         handlers=[
             file_logger,
             console_logger
         ]
     )
-    logging.info("P2Rank visualization...")
+    logging.info("P2Rank - generating visualization script...")
     with open(args.pymol_script, 'a', encoding="utf8") as pymol_script:
         with open(f"{args.AFPAPpath}/config/pymol.pml", 'r', encoding="utf8") as pymol_template:
             pymol_data = pymol_template.read()
@@ -47,6 +47,8 @@ def main():
     p2rank_predictions.columns = ["Name", "Rank", "Score", "Probability", "SAS points", "Surface atoms", "Center X", "Center Y", "Center Z"]
     p2rank_predictions.to_csv(f"{args.outputDir}/work/p2rank_predictions.csv", index=False)
     p2rank_predictions.to_csv(f"{args.outputDir}/work/multiqc_files/p2rank_predictions.csv", index=False)
+    logging.info("P2Rank - visualization script generation completed...")
+    return 0
 
 
 if __name__ == '__main__':

@@ -1,5 +1,4 @@
 #! /usr/bin/env nextflow
-/* groovylint-disable LineLength */
 nextflow.enable.dsl=2
 
 def helpMessage() {
@@ -13,11 +12,11 @@ def helpMessage() {
         nextflow run main.nf --pdb input.pdb
 
     Mandatory input:
-    --fasta <path>                  Sequence fasta file
+    --fasta <path>                  Sequence FASTA file
         OR
     --pdb <path>                    Structure PDB file
-    If a sequence fasta file is provided the structure will be predicted using AlphaFold.
-    If a pdb file is provided the sequence will be extracted from the structure.
+    If a sequence FASTA file is provided the structure will be predicted using AlphaFold.
+    If a PDB file is provided the sequence will be extracted from the structure.
 
     Optional arguments:
     --outputDir <path>              Output directory (default './output')
@@ -63,7 +62,7 @@ def helpMessage() {
 
     --skipPocketPrediction <0/1>    Skip pocket prediction (default false)
 
-    --skipPointMutations <0/1>      Skip point mutations effect prediction (default false)
+    --skipStabilityChanges <0/1>    Skip residue substitution effect prediction (default false)
 
     --skipMolecularDocking <0/1>    Skip molecular docking (default false)
 
@@ -124,8 +123,8 @@ def validateParameters() {
         log.error'skipStructureViewer must be 0/1!'
         exit 1
     }
-    if (!validBool.contains(params.skipPointMutations)) {
-        log.error'skipPointMutations must be 0/1!'
+    if (!validBool.contains(params.skipStabilityChanges)) {
+        log.error'skipStabilityChanges must be 0/1!'
         exit 1
     }
     if (!validBool.contains(params.skipPocketPrediction)) {
@@ -140,7 +139,7 @@ def validateParameters() {
         log.error'skipMultiQC must be 0/1!'
         exit 1
     }
-    paramList = ['pfam_path', 'blastdb_path', 'fasta', 'pdb', 'outputDir', 'output-dir', 'help', 'ligands', 'dock_pockets', 'md_exhaustiveness', 'md_box_size', 'md_spacing', 'blastArgs', 'blast-args', 'colabfoldArgs', 'colabfold-args', 'pdb_type', 'skipAlphaFold', 'skip-alpha-fold', 'skipStructuralAnalysis', 'skip-structural-analysis', 'skipSequenceProperties', 'skip-sequence-properties', 'skipPfamSearch', 'skip-pfam-search', 'skipConservationMSA', 'skip-conservation-MSA', 'skipStructureViewer', 'skip-structure-viewer', 'skipPointMutations', 'skip-point-mutations', 'skipMolecularDocking', 'skip-molecular-docking', 'skipMultiQC', 'skip-multi-QC', 'skip-pocket-prediction', 'skipPocketPrediction']
+    paramList = ['pfam_path', 'blastdb_path', 'fasta', 'pdb', 'outputDir', 'output-dir', 'help', 'ligands', 'dock_pockets', 'md_exhaustiveness', 'md_box_size', 'md_spacing', 'blastArgs', 'blast-args', 'colabfoldArgs', 'colabfold-args', 'pdb_type', 'skipAlphaFold', 'skip-alpha-fold', 'skipStructuralAnalysis', 'skip-structural-analysis', 'skipSequenceProperties', 'skip-sequence-properties', 'skipPfamSearch', 'skip-pfam-search', 'skipConservationMSA', 'skip-conservation-MSA', 'skipStructureViewer', 'skip-structure-viewer', 'skipStabilityChanges', 'skip-stability-changes', 'skipMolecularDocking', 'skip-molecular-docking', 'skipMultiQC', 'skip-multi-QC', 'skip-pocket-prediction', 'skipPocketPrediction']
     for (parameter in params) {
         if (!paramList.contains(parameter.key)) {
             log.warn"Unknown parameter ${parameter.key}..."
@@ -299,7 +298,7 @@ process prepareStructure {
     """
 }
 
-process pointMutations {
+process stabilityChanges {
     input:
         path outDir
         val structConfirm
@@ -307,7 +306,7 @@ process pointMutations {
         val 0
     script:
     """
-    python "$projectDir/bin/AFPAP_point_mutations.py" -i "$outDir/work/${params.inputBaseName}_fixed.pdb" -o $outDir --AFPAPpath $projectDir
+    python "$projectDir/bin/AFPAP_stability_changes.py" -i "$outDir/work/${params.inputBaseName}_fixed.pdb" -o $outDir --AFPAPpath $projectDir
     """
 }
 
@@ -470,9 +469,9 @@ workflow {
 
     // --------- Structural Analysis ---------
     
-    if (!params.skipPointMutations && !params.skipStructuralAnalysis) {
-        pointMutations(pipeline_ch, struct_ch)
-        mut_ch = pointMutations.out
+    if (!params.skipStabilityChanges && !params.skipStructuralAnalysis) {
+        stabilityChanges(pipeline_ch, struct_ch)
+        mut_ch = stabilityChanges.out
     }
     else {
         mut_ch = Channel.from(0)

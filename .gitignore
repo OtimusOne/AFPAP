@@ -131,5 +131,6 @@ dmypy.json
 .nextflow/
 .nextflow.log*
 output*/
+out*/
 misc/
 work/

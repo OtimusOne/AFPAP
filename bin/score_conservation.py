@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-# This is a python3 translation of the original score_conservation.py file
+# **This is a python3 translation of the original score_conservation.py file**
+
 ################################################################################
 # score_conservation.py - Copyright Tony Capra 2007 - Last Update: 03/09/11
 #

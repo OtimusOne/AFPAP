@@ -1,7 +1,7 @@
 #!/usr/bin/awk -f
 
-# Each line is in this format: id<space>coverageInPercent<space>identityInPercent
-# Output is only sequence_id that pass the filter.
+# Each input line is in the format: sequence_id<space>coverageInPercent<space>identityInPercent
+# Output is the sequence_ids that pass the filter.
 {
     id = $1
     cover = $2

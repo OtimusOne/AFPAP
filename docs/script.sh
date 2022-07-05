@@ -1,7 +1,7 @@
 #! /bin/bash
-
-AFPAP_PATH="/mnt/x/Disertatie/AFPAP"
-Pfam_PATH="/mnt/x/Disertatie/Pfam"
+# original pipeline prototype, no longer funtional
+AFPAP_PATH="/mnt/x/AFPAP"
+Pfam_PATH="/mnt/x/Pfam"
 md_exhaustiveness=4
 
 while getopts i:p:l:o: flag

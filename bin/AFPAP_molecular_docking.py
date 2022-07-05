@@ -2,7 +2,7 @@
 # File name: AFPAP_molecular_docking.py
 # Description: Python script for molecular docking with AutoDock Vina
 # Author: Maghiar Octavian
-# Date: 04-04-2022
+# Date: 30-06-2022
 '''
 import argparse
 import logging
@@ -88,7 +88,7 @@ def main():
     file_logger.setLevel(logging.INFO)
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s [%(name)s] %(levelname)-8.8s - %(message)s",
+        format="%(asctime)s [%(name)s] %(levelname)s - %(message)s",
         handlers=[
             file_logger,
             console_logger
@@ -98,7 +98,7 @@ def main():
     md_box_size = int(args.box_size)
     md_spacing = float(args.spacing)
 
-    logging.info("Molecular docking ligand %s...", args.name)
+    logging.info("AutoDock Vina - Docking ligand %s...", args.name)
     with open(f'{args.outputDir}/work/multiqc_files/molecular_docking_{args.name}_mqc.txt', 'w', encoding="utf8") as mqc_file:
         with open(f'{args.AFPAPpath}/config/molecularDocking_template.txt', 'r', encoding="utf8") as template:
             template_data = template.read()
@@ -109,10 +109,10 @@ def main():
             print("set retain_order\nset pdb_retain_ids", file=pml)
 
             if args.dock_pockets and os.path.exists(f"{args.outputDir}/work/p2rank_predictions.csv"):
-                logging.info("%s - Pocket docking...", args.name)
+                logging.info("AutoDock Vina - %s ligand - Docking predicted pockets...", args.name)
                 p2rank_precitions = pd.read_csv(f"{args.outputDir}/work/p2rank_predictions.csv")
                 for i, row in p2rank_precitions.iterrows():
-                    logging.info("%s - Docking pocket %d/%d...", args.name, i+1, p2rank_precitions.shape[0])
+                    logging.info("AutoDock Vina - %s ligand - Docking pocket %d/%d...", args.name, i+1, p2rank_precitions.shape[0])
 
                     vina_object = dock(receptor=args.receptor, ligand=args.ligand, center=[row['Center X'], row['Center Y'], row['Center Z']], box_size=[
                                        md_box_size, md_box_size, md_box_size], spacing=md_spacing, exhaustiveness=md_exhaustiveness)
@@ -129,7 +129,7 @@ def main():
                     print(row['Name'], best_score, f"{mean_score} \u00B1 {std_score}",
                           f"{np.round(row['Center X'],2)},{np.round(row['Center Y'],2)},{np.round(row['Center Z'],2)}", f"{md_box_size},{md_box_size},{md_box_size}", md_spacing, md_exhaustiveness, sep='\t', file=mqc_file)
 
-            logging.info("%s - Blind docking...", args.name)
+            logging.info("AutoDock Vina - %s ligand - Blind docking...", args.name)
 
             center_x, box_x, center_y, box_y, center_z, box_z = calculate_wide_box(args.receptor)
             vina_object = dock(receptor=args.receptor, ligand=args.ligand, center=[center_x, center_y, center_z], box_size=[box_x, box_y, box_z], spacing=1, exhaustiveness=md_exhaustiveness)
@@ -146,6 +146,8 @@ def main():
             print('Blind docking', best_score, f"{mean_score} \u00B1 {std_score}", f"{np.round(center_x,2)},{np.round(center_y,2)},{np.round(center_z,2)}",
                   f"{int(box_x)},{int(box_y)},{int(box_z)}", 1, md_exhaustiveness, sep='\t', file=mqc_file)
 
+    logging.info("AutoDock Vina - Molecular docking of ligand %s completed.", args.name)
+    return 0
 
 if __name__ == '__main__':
     main()

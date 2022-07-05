@@ -2,7 +2,7 @@
 # File name: AFPAP_sequence_properties.py
 # Description: Python script for generating MultiQC report sequence analysis section.
 # Author: Maghiar Octavian
-# Date: 04-04-2022
+# Date: 30-06-2022
 '''
 import argparse
 import logging
@@ -169,14 +169,14 @@ def main():
     file_logger.setLevel(logging.INFO)
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s [%(name)s] %(levelname)-8.8s - %(message)s",
+        format="%(asctime)s [%(name)s] %(levelname)s - %(message)s",
         handlers=[
             file_logger,
             console_logger
         ]
     )
 
-    logging.info("Sequence analysis...")
+    logging.info("Calculating sequence properties...")
 
     records = list(SeqIO.parse(args.input, "fasta"))
     if len(records) == 0:
@@ -186,6 +186,8 @@ def main():
 
     section_protein_sequence_viewer(protein_sequence, args)
     section_sequence_properties(protein_sequence, args)
+    logging.info("Sequence properties completed.")
+    return 0
 
 
 if __name__ == '__main__':

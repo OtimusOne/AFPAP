@@ -22,13 +22,13 @@ custom_data:
                 description: "Total number of atoms."
                 format: '{:,.0f}'
             Aromaticity:
-                description: "Aromaticity according to Lobry, 1994.(relative frequency of Phe+Trp+Tyr)"
+                description: "Aromaticity according to Lobry, 1994.(relative frequency of Phe+Trp+Tyr)."
             Instability index:
                 description: "Instability index according to Guruprasad et al 1990."
             Isoelctric point:
                 description: "Isoelectric point."
             Extinction coefficients:
-                description: "The molar extinction coefficient assuming cysteines (reduced) and cystines residues (Cys-Cys-bond)"
+                description: "The molar extinction coefficient assuming cysteines (reduced) and cystines residues (Cys-Cys-bond)."
             GRAVY:
                 description: "Grand average of hydropathicity index(Gravy) according to Kyte and Doolittle."
             Negatively charged residues:

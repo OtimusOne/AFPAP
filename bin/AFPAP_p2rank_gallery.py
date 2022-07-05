@@ -2,7 +2,7 @@
 # File name: AFPAP_p2rank_gallery.py
 # Description: Python script for generating P2Rank pocket gallery
 # Author: Maghiar Octavian
-# Date: 04-04-2022
+# Date: 30-06-2022
 '''
 import argparse
 import base64
@@ -79,13 +79,13 @@ def main():
     file_logger.setLevel(logging.INFO)
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s [%(name)s] %(levelname)-8.8s - %(message)s",
+        format="%(asctime)s [%(name)s] %(levelname)s - %(message)s",
         handlers=[
             file_logger,
             console_logger
         ]
     )
-    logging.info("P2Rank Pocket Viewer...")
+    logging.info("P2Rank - generating Pocket Viewer...")
 
     p2rank_predictions = pd.read_csv(f"{args.outputDir}/work/p2rank_predictions.csv")
 
@@ -119,6 +119,8 @@ def main():
 
         with open(f"{args.outputDir}/work/multiqc_files/p2rank_viewer_mqc.html", 'w', encoding="utf8") as mqc_file:
             mqc_file.write(template_data)
+    logging.info("P2Rank - Pocket Viewer generation completed.")
+    return 0
 
 
 if __name__ == '__main__':

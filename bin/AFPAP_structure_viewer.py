@@ -2,7 +2,7 @@
 # File name: AFPAP_structure_analysis.py
 # Description: Python script for generating iCn3D viewer section
 # Author: Maghiar Octavian
-# Date: 04-04-2022
+# Date: 30-06-2022
 '''
 import argparse
 import logging
@@ -28,14 +28,14 @@ def main():
     file_logger.setLevel(logging.INFO)
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s [%(name)s] %(levelname)-8.8s - %(message)s",
+        format="%(asctime)s [%(name)s] %(levelname)s - %(message)s",
         handlers=[
             file_logger,
             console_logger
         ]
     )
 
-    logging.info("Structure Viewer...")
+    logging.info("Generating Structure Viewer...")
     with open(args.input, 'r', encoding="utf8") as pdb_file:
         pdb_data = pdb_file.read()
         with open(f"{args.AFPAPpath}/config/pdbViewer_template.html", 'r', encoding="utf8") as template:
@@ -45,6 +45,8 @@ def main():
 
             with open(f'{args.outputDir}/work/multiqc_files/structure_viewer_mqc.html', 'w', encoding="utf8") as mqc_file:
                 mqc_file.write(template_data)
+    logging.info("Structure Viewer completed.")
+    return 0
 
 
 if __name__ == '__main__':
