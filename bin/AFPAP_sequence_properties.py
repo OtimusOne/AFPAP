@@ -1,6 +1,6 @@
 '''
 # File name: AFPAP_sequence_properties.py
-# Description: Python script for generating MultiQC report sequence analysis section.
+# Description: Python script for generating MultiQC report sequence properties section.
 # Author: Maghiar Octavian
 # Date: 30-06-2022
 '''
@@ -14,7 +14,7 @@ from Bio.PDB.Polypeptide import one_to_three
 from Bio.SeqUtils.ProtParam import ProteinAnalysis, ProtParamData
 
 
-def section_protein_sequence_viewer(protein_sequence, args):
+def protein_sequence_viewer(protein_sequence, args):
     '''
     Generates MultiQC report sequence viewer.
 
@@ -69,7 +69,7 @@ def section_protein_sequence_viewer(protein_sequence, args):
             print(template_data, file=mqc_file)
 
 
-def section_sequence_properties(protein_sequence, args):
+def sequence_properties(protein_sequence, args):
     '''
     Generates MultiQC report sequence properties.
 
@@ -153,7 +153,7 @@ def section_sequence_properties(protein_sequence, args):
 
 def main():
     '''
-    Python script for generating MultiQC report sequence analysis section.
+    Python script for generating MultiQC report sequence properties section.
     '''
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbosity', action="count", help="verbosity")
@@ -180,12 +180,12 @@ def main():
 
     records = list(SeqIO.parse(args.input, "fasta"))
     if len(records) == 0:
-        logging.error("No records in input fasta file")
-        raise AssertionError()
+        logging.error("No records in input fasta file!")
+        raise Exception("No records in input fasta file!")
     protein_sequence = str(records[0].seq)
 
-    section_protein_sequence_viewer(protein_sequence, args)
-    section_sequence_properties(protein_sequence, args)
+    protein_sequence_viewer(protein_sequence, args)
+    sequence_properties(protein_sequence, args)
     logging.info("Sequence properties completed.")
     return 0
 

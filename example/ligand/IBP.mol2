@@ -1,0 +1,60 @@
+# Name: IBP
+# Created by ModelServer 0.9.9
+
+# model_server_result.job_id: 0D3f07Yp_c5-UiW2S5vlYQ
+# model_server_result.datetime_utc: 2022-07-04 17:33:47
+# model_server_result.server_version: 0.9.9
+# model_server_result.query_name: ligand
+# model_server_result.source_id: pdb-bcif
+# model_server_result.entry_id: 3p6h
+
+# model_server_params.name: atom_site
+# model_server_params.value: {"label_asym_id":"B","auth_seq_id":133}
+
+# model_server_stats.io_time_ms: 7
+# model_server_stats.parse_time_ms: 37
+# model_server_stats.create_model_time_ms: 3
+# model_server_stats.query_time_ms: 235
+# model_server_stats.encode_time_ms: 0
+# model_server_stats.element_count: 15
+
+@<TRIPOS>MOLECULE
+IBP
+15 15 1
+****
+****
+
+@<TRIPOS>ATOM
+1 C1 5.912 6.100 15.533 C.2 1 IBP 0.000
+2 C2 4.998 8.580 21.675 C.3 1 IBP 0.000
+3 C3 4.916 7.519 22.769 C.3 1 IBP 0.000
+4 C4 6.354 7.260 23.229 C.3 1 IBP 0.000
+5 C5 4.046 6.332 22.271 C.3 1 IBP 0.000
+6 C6 6.959 6.541 16.556 C.3 1 IBP 0.000
+7 C7 7.564 7.849 16.044 C.3 1 IBP 0.000
+8 C8 6.383 6.991 17.891 C.ar 1 IBP 0.000
+9 C9 7.295 7.487 18.806 C.ar 1 IBP 0.000
+10 C10 6.818 7.993 20.007 C.ar 1 IBP 0.000
+11 C11 5.466 7.995 20.324 C.ar 1 IBP 0.000
+12 C12 4.558 7.493 19.381 C.ar 1 IBP 0.000
+13 C13 5.011 7.006 18.157 C.ar 1 IBP 0.000
+14 O1 5.828 4.891 15.301 O.3 1 IBP 0.000
+15 O2 5.119 6.949 15.023 O.2 1 IBP 0.000
+@<TRIPOS>BOND
+1 1 6 1
+2 1 14 1
+3 1 15 2
+4 2 3 1
+5 2 11 1
+6 3 4 1
+7 3 5 1
+8 6 7 1
+9 6 8 1
+10 8 9 ar
+11 8 13 ar
+12 9 10 ar
+13 10 11 ar
+14 11 12 ar
+15 12 13 ar
+@<TRIPOS>SUBSTRUCTURE
+1 IBP 1

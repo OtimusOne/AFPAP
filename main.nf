@@ -1,5 +1,5 @@
 #! /usr/bin/env nextflow
-nextflow.enable.dsl=2
+nextflow.enable.dsl = 2
 
 def helpMessage() {
     log.info """
@@ -147,6 +147,7 @@ def validateParameters() {
     }
 }
 
+// Configure pipeline directory structure
 process configurePipeline {
     input:
         path inputFile
@@ -168,18 +169,21 @@ process configurePipeline {
         """
 }
 
-process getFASTAfromPDB {
+// Extract and validate FASTA sequence from PDB file
+process validateFASTA {
     input:
         path pdbFile
         path outDir
+        val fileType
     output:
         path "$outDir/${params.inputBaseName}.fasta"
     script:
     """
-    python "$projectDir/bin/AFPAP_FASTA_from_PDB.py" -i $pdbFile -n "${params.inputBaseName}.fasta" -o $outDir
+    python "$projectDir/bin/AFPAP_validate_FASTA.py" -i $pdbFile -n $params.inputBaseName -o $outDir -t $fileType
     """
 }
 
+// Predict PDB structure using ColabFold
 process predictPDB {
     input:
         path fastaFile
@@ -199,6 +203,7 @@ process predictPDB {
     """
 }
 
+// Generate sequence viewer and properties
 process sequenceProperties {
     input:
         path fastaFile
@@ -211,6 +216,7 @@ process sequenceProperties {
     """
 }
 
+// Align sequence using the Pfam database
 process pfamSearch {
     input:
         path fastaFile
@@ -224,7 +230,7 @@ process pfamSearch {
     """
 }
 
-
+// Generate MSA and calculate sequence conservation
 process conservationMSA {
     input:
         path fastaFile
@@ -262,7 +268,7 @@ process conservationMSA {
         cat "\${modifiedInputFile}" "\${blastResults}" > "\${blastTempFile}"
         muscle -align "\${blastTempFile}" -output "\${muscleTempFile}"
         awk -f $projectDir/bin/MSA_sort_MUSCLE.awk < "\${muscleTempFile}" > "\${muscleAlignment}"
-        
+
         python $projectDir/bin/score_conservation.py -m $projectDir/config/blosum62.bla "\${muscleAlignment}" > "\${conservationFile}"
         cp "\${conservationFile}" "$outDir/work/multiqc_files/"
     else
@@ -275,7 +281,7 @@ process conservationMSA {
     """
 }
 
-
+// Add secondary structure, prepare protein for molecular docking
 process prepareStructure {
     input:
         path pdbFile
@@ -298,6 +304,7 @@ process prepareStructure {
     """
 }
 
+// Predict amino acid substitution effect on protein stability
 process stabilityChanges {
     input:
         path outDir
@@ -310,6 +317,7 @@ process stabilityChanges {
     """
 }
 
+// Predict binding pockets using P2Rank
 process pocketPrediction {
     input:
         path outDir
@@ -333,6 +341,7 @@ process pocketPrediction {
     """
 }
 
+// Dock ligands using AutoDock Vina
 process molecularDocking {
     input:
         path outDir
@@ -366,6 +375,7 @@ process molecularDocking {
     }
 }
 
+// Generate MultiQC report and publish results
 process processPipelineOutput {
     publishDir "${params.outputDir}", mode: 'copy'
     input:
@@ -380,16 +390,14 @@ process processPipelineOutput {
     output:
         path("./$params.inputBaseName")
     script:
-    //echo $saConfirm $pfamConfirm $structConfirm $pocketConfirm $mutationConfirm $mdConfirm >> $outDir/work/ah.txt
     """
     if [ "$params.skipMultiQC" != "true" ] && [ "$params.skipMultiQC" != 1 ] ; then
-        multiqc -f -c "$projectDir/config/multiqc_config.yaml" --custom-css-file "$projectDir/config/multiqc_custom_css.css" -o $outDir "$outDir/work/multiqc_files" 
+        multiqc -f -c "$projectDir/config/multiqc_config.yaml" --custom-css-file "$projectDir/config/multiqc_custom_css.css" -o $outDir "$outDir/work/multiqc_files"
     fi
     """
 }
 
 workflow {
-
     // --------- Pipeline Configuration ---------
 
     // Show help message
@@ -400,37 +408,31 @@ workflow {
 
     validateParameters()
 
-    if (!params.fasta && params.pdb) {
+    if (params.pdb) {
         pdb_ch = Channel.fromPath(params.pdb)
         configurePipeline(pdb_ch)
         pipeline_ch = configurePipeline.out
-        getFASTAfromPDB(pdb_ch, pipeline_ch)
-        fasta_ch = getFASTAfromPDB.out
+        validateFASTA(pdb_ch, pipeline_ch, 1)
+        fasta_ch = validateFASTA.out
     }
-    else if (!params.pdb && params.fasta) {
+    else {
+        raw_fasta_ch = Channel.fromPath(params.fasta)
+        configurePipeline(raw_fasta_ch)
+        pipeline_ch = configurePipeline.out
+        validateFASTA(raw_fasta_ch, pipeline_ch, 0)
+        fasta_ch = validateFASTA.out
+
         if (params.skipStructuralAnalysis) {
-            fasta_ch = Channel.fromPath(params.fasta)
-            configurePipeline(fasta_ch)
-            pipeline_ch = configurePipeline.out
             pdb_ch = Channel.from(0)
         }
         else if (params.skipAlphaFold) {
-            log.error'No AlphaFold - provide PDB file..'
+            log.error'No AlphaFold - provide PDB file...'
             exit 1
         }
         else {
-            fasta_ch = Channel.fromPath(params.fasta)
-            configurePipeline(fasta_ch)
-            pipeline_ch = configurePipeline.out
             predictPDB(fasta_ch, pipeline_ch)
             pdb_ch = predictPDB.out
         }
-    }
-    else {
-        fasta_ch = Channel.fromPath(params.fasta)
-        pdb_ch = Channel.fromPath(params.pdb)
-        configurePipeline(pdb_ch)
-        pipeline_ch = configurePipeline.out
     }
 
     // --------- Sequence Analysis ---------
@@ -468,7 +470,7 @@ workflow {
     }
 
     // --------- Structural Analysis ---------
-    
+
     if (!params.skipStabilityChanges && !params.skipStructuralAnalysis) {
         stabilityChanges(pipeline_ch, struct_ch)
         mut_ch = stabilityChanges.out
@@ -494,6 +496,7 @@ workflow {
         md_ch = Channel.from(0)
     }
 
+    // --------- Generate MultiQC report ---------
     processPipelineOutput(pipeline_ch, sa_ch, pfam_ch, msa_ch, struct_ch, pp_ch, mut_ch, md_ch)
 }
 

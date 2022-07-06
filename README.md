@@ -6,7 +6,7 @@
 
 <div align="center">
 
-[![Status](https://img.shields.io/badge/status-active-success.svg)]()
+[![Status](https://img.shields.io/badge/status-active-success.svg)](.)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
 
 </div>
@@ -25,13 +25,22 @@
  <img width=720px src="./docs/pipeline_diagram.png" alt="Pipeline diagram">
 </p>
 
-<!--
--->
+### This project constitutes a protein analysis pipeline that allows for a quick and comprehensive analysis of a protein sequence or structure.
+
+- The pipeline accepts as input a protein sequence in FASTA format or a protein structure in PDB format. If a PDB file is not provided, the 3D structure of the protein can be predicted using [AlphaFold2](https://github.com/deepmind/alphafold).
+
+- A sequence-based analysis can be performed, including determining physicochemical properties and aligning the protein sequence against other databases such as [Pfam](https://pfam.xfam.org/) and [SwissProt/UniRef90](https://www.uniprot.org/).
+
+- A structure-based analysis can be performed, including predicting the effect of amino acid substitutions over the protein stability using [SimBa2](https://github.com/kasperplaneta/SimBa2) and the detection of binding pockets using [P2Rank](https://github.com/rdk/p2rank).
+
+- A list of ligands can be specified in the PDB/MOL2 format. The binding affinity of the protein-ligand interactions can be predicted using [AutoDock Vina](https://github.com/ccsb-scripps/AutoDock-Vina).
+
+- The outputs obtained during each process are aggregated into a [MultiQC](https://github.com/ewels/MultiQC) HTML report. The analysis report presents the results in an interactive manner, including visualizing the three-dimensional protein structure using the [iCn3D](https://github.com/ncbi/icn3d) web viewer. The pipeline is being developed using [Nextflow](https://github.com/nextflow-io/nextflow).
 
 # Installation <a name = "installation"></a>
 ### ***IMPORTANT:** This project is under active development. Momentarily the pipeline can only be utilized by manually installing the desired packages and tools. Support for Docker/Singularity containers represents a high-priority future update.*
 
-## Prerequisites
+## Prerequisites:
 
 <ul>
 <li>Python ≥ 3.8</li>
@@ -138,7 +147,7 @@ pip install vina
 Usage example:
 ```
 nextflow run main.nf --fasta input.fasta
-nextflow run path/to/main.nf --pdb input.pdb --ligands "ligand1.mol2 path/to/ligand2.mol2"
+nextflow run path/to/main.nf --pdb input.pdb --ligands "ligand1.mol2 path/to/ligand2.pdb"
 ```
 For a full list of parameters run:
 ```
@@ -151,14 +160,17 @@ nextflow run main.nf --help
 - Maghiar Octavian-Florin
 
 ## Acknowledgements <a name = "acknowledgement"></a>
-If you find this work useful please properly cite the revelant used tools.
+If you find this work useful please properly cite any of the revelant tools.
 
 
-- **AlphaFold**: Jumper, J. et al. (2021) ‘Highly accurate protein structure prediction with AlphaFold’, Nature, 596(7873), pp. 583–589. Available at: https://doi.org/10.1038/s41586-021-03819-2.
+- **AlphaFold2**: Jumper, J. et al. (2021) ‘Highly accurate protein structure prediction with AlphaFold’, Nature, 596(7873), pp. 583–589. Available at: https://doi.org/10.1038/s41586-021-03819-2.
 
 - **ColabFold**: Mirdita, M. et al. (2021) ColabFold - Making protein folding accessible to all. preprint. Bioinformatics. Available at: https://doi.org/10.1101/2021.08.15.456425.
 
 - **P2Rank**: Krivák, R. and Hoksza, D. (2018) ‘P2Rank: machine learning based tool for rapid and accurate prediction of ligand binding sites from protein structure’, Journal of Cheminformatics, 10(1), p. 39. Available at: https://doi.org/10.1186/s13321-018-0285-8.
+
+    Jendele, L. et al. (2019) ‘PrankWeb: a web server for ligand binding site prediction and visualization’, Nucleic Acids Research, 47(W1), pp. W345–W349. Available at: https://doi.org/10.1093/nar/gkz424.
+
 
 - **AutoDock Vina**: Eberhardt, J. et al. (2021) ‘AutoDock Vina 1.2.0: New Docking Methods, Expanded Force Field, and Python Bindings’, Journal of Chemical Information and Modeling, 61(8), pp. 3891–3898. Available at: https://doi.org/10.1021/acs.jcim.1c00203.
 
@@ -172,3 +184,9 @@ If you find this work useful please properly cite the revelant used tools.
 - **Nextflow**: Di Tommaso, P. et al. (2017) ‘Nextflow enables reproducible computational workflows’, Nature Biotechnology, 35(4), pp. 316–319. Available at: https://doi.org/10.1038/nbt.3820.
 
 - **MultiQC**: Ewels, P. et al. (2016) ‘MultiQC: summarize analysis results for multiple tools and samples in a single report’, Bioinformatics, 32(19), pp. 3047–3048. Available at: https://doi.org/10.1093/bioinformatics/btw354.
+
+- **BLAST**: Camacho, C. et al. (2009) ‘BLAST+: architecture and applications’, BMC Bioinformatics, 10(1), p. 421. Available at: https://doi.org/10.1186/1471-2105-10-421.
+
+- **CD-HIT**: Fu, L. et al. (2012) ‘CD-HIT: accelerated for clustering the next-generation sequencing data’, Bioinformatics, 28(23), pp. 3150–3152. Available at: https://doi.org/10.1093/bioinformatics/bts565.
+
+- **MUSCLE**: Edgar, R.C. (2004) ‘MUSCLE: multiple sequence alignment with high accuracy and high throughput’, Nucleic Acids Research, 32(5), pp. 1792–1797. Available at: https://doi.org/10.1093/nar/gkh340.

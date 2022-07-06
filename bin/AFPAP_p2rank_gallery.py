@@ -53,7 +53,6 @@ def crop_image_whitespace(image, base_height=480):
     '''
     background_image = Image.new(image.mode, image.size, image.getpixel((0, 0)))
     diff = ImageChops.difference(image, background_image)
-    diff = ImageChops.add(diff, diff, 2.0, -100)
     bbox = diff.getbbox()
     if bbox:
         image = image.crop(bbox)
