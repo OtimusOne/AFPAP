@@ -1,6 +1,6 @@
 '''
 # File name: AFPAP_secondary_structure.py
-# Description: Python script for generating secondary structure of pdb file
+# Description: Python script for generating secondary structure of PDB file
 # Author: Maghiar Octavian
 # Date: 30-06-2022
 '''
@@ -29,7 +29,7 @@ def prepend_whitespace(string="", length=1):
 
 def get_dssp_df(pdb_file=None):
     '''
-    Create DSSP dataframe from pdb file.
+    Create DSSP dataframe from PDB file.
 
     Parameters:
         pdb_file: PDB file.
@@ -60,7 +60,7 @@ def get_dssp_df(pdb_file=None):
 
 def main():
     '''
-    Python script for generating secondary structure of pdb file
+    Python script for generating secondary structure of PDB file
     '''
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbosity', action="count", help="verbosity")

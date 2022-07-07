@@ -1,6 +1,6 @@
-<p align="center">
+<div align="center">
  <img width=400px src="./docs/logo2.png" alt="Project logo">
-</p>
+</div>
 
 <h2 align="center">AlphaFold-based Protein Analysis Pipeline</h2>
 
@@ -21,9 +21,9 @@
 - [Acknowledgments](#acknowledgement)
 
 # Description <a name = "description"></a>
-<p align="center">
+<div align="center">
  <img width=720px src="./docs/pipeline_diagram.png" alt="Pipeline diagram">
-</p>
+</div>
 
 ### This project constitutes a protein analysis pipeline that allows for a quick and comprehensive analysis of a protein sequence or structure.
 
@@ -67,7 +67,7 @@ curl -fsSL https://get.nextflow.io | bash
 git clone https://github.com/OtimusOne/AFPAP.git
 ```
 ## Optional components: 
-- The following analysis steps are optional and their installation can be skipped if desired.
+The following analysis steps are optional and their installation can be skipped if so desired.
 ### 3D structure prediction - AlphaFold2/ColabFold:
 - AlphaFold2 is used to predicted the protein structure if a PDB file is not provided. We use a local instance of ColabFold in order to avoid the large databases used by native AlphaFold2 implementation.
 - Follow the install intructions at: https://github.com/YoshitakaMo/localcolabfold

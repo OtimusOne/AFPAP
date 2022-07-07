@@ -109,7 +109,7 @@ def main():
         else:
             pocket_description += "No binding pocket detected!"
         pocket_description += "</span>"
-        template_data = template_data.replace("--pocketColors--", pocket_description)
+        template_data = template_data.replace("--pocketLegend--", pocket_description)
 
         for j, img in enumerate(pocket_images_crop):
             with open(f'{args.outputDir}/work/visualizations/{img}', "rb") as image_file:

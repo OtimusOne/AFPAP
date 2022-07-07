@@ -169,8 +169,8 @@ process configurePipeline {
         """
 }
 
-// Extract and validate FASTA sequence from PDB file
-process validateFASTA {
+// Extract and validate protein sequence from input file
+process validateSequence {
     input:
         path pdbFile
         path outDir
@@ -179,7 +179,7 @@ process validateFASTA {
         path "$outDir/${params.inputBaseName}.fasta"
     script:
     """
-    python "$projectDir/bin/AFPAP_validate_FASTA.py" -i $pdbFile -n $params.inputBaseName -o $outDir -t $fileType
+    python "$projectDir/bin/AFPAP_validate_sequence.py" -i $pdbFile -n $params.inputBaseName -o $outDir -t $fileType
     """
 }
 
@@ -412,15 +412,15 @@ workflow {
         pdb_ch = Channel.fromPath(params.pdb)
         configurePipeline(pdb_ch)
         pipeline_ch = configurePipeline.out
-        validateFASTA(pdb_ch, pipeline_ch, 1)
-        fasta_ch = validateFASTA.out
+        validateSequence(pdb_ch, pipeline_ch, 1)
+        fasta_ch = validateSequence.out
     }
     else {
         raw_fasta_ch = Channel.fromPath(params.fasta)
         configurePipeline(raw_fasta_ch)
         pipeline_ch = configurePipeline.out
-        validateFASTA(raw_fasta_ch, pipeline_ch, 0)
-        fasta_ch = validateFASTA.out
+        validateSequence(raw_fasta_ch, pipeline_ch, 0)
+        fasta_ch = validateSequence.out
 
         if (params.skipStructuralAnalysis) {
             pdb_ch = Channel.from(0)

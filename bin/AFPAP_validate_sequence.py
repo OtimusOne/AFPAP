@@ -1,6 +1,6 @@
 '''
 # File name: AFPAP_validate_FASTA.py
-# Description: Python script for validating protein sequence
+# Description: Python script for validating the protein sequence
 # Author: Maghiar Octavian
 # Date: 30-06-2022
 '''
@@ -14,7 +14,7 @@ from Bio import BiopythonWarning
 
 def main():
     '''
-    Python script for validating protein sequence
+    Python script for validating the protein sequence
     '''
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbosity', action="count", help="verbosity")
@@ -46,13 +46,13 @@ def main():
             if len(records) > 1:
                 logging.warning("Input file contains multiple sequences, extracting one...")
             if len(records):
-                if 'X' in str(records[0].seq):
+                if 'X' in str(records[0].seq).upper():
                     logging.error("Unknown residue in protein sequence!")
                     raise Exception("Unknown residue in protein sequence!")
                 AA_ALPHABET = frozenset("ARNDCEQGHILKMFPSTWYV")
                 if (not set(str(records[0].seq).upper()) <= AA_ALPHABET):
-                    logging.error("Protein sequence contains characters different than the 20 amino-acids!")
-                    raise Exception("Protein sequence contains characters different than the 20 amino-acids!")
+                    logging.error("Protein sequence contains characters different than the 20 standard amino-acids!")
+                    raise Exception("Protein sequence contains characters different than the 20 standard amino-acids!")
                 print('>' + str(records[0].id).replace("????", args.name), file=fasta_file)
                 print(str(records[0].seq).upper(), file=fasta_file)
                 logging.info("Protein sequence extraction completed.")
