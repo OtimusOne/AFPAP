@@ -1,5 +1,5 @@
 '''
-# File name: AFPAP_validate_FASTA.py
+# File name: AFPAP_validate_sequence.py
 # Description: Python script for validating the protein sequence
 # Author: Maghiar Octavian
 # Date: 30-06-2022

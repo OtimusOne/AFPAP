@@ -29,13 +29,15 @@
 
 - The pipeline accepts as input a protein sequence in FASTA format or a protein structure in PDB format. If a PDB file is not provided, the 3D structure of the protein can be predicted using [AlphaFold2](https://github.com/deepmind/alphafold).
 
-- A sequence-based analysis can be performed, including determining physicochemical properties and aligning the protein sequence against other databases such as [Pfam](https://pfam.xfam.org/) and [SwissProt/UniRef90](https://www.uniprot.org/).
+- A sequence-based analysis can be performed, including determining physicochemical properties and aligning the protein sequence against other databases such as [Pfam](https://pfam.xfam.org/) and [Swiss-Prot/UniRef90](https://www.uniprot.org/).
 
 - A structure-based analysis can be performed, including predicting the effect of amino acid substitutions over the protein stability using [SimBa2](https://github.com/kasperplaneta/SimBa2) and the detection of binding pockets using [P2Rank](https://github.com/rdk/p2rank).
 
 - A list of ligands can be specified in the PDB/MOL2 format. The binding affinity of the protein-ligand interactions can be predicted using [AutoDock Vina](https://github.com/ccsb-scripps/AutoDock-Vina).
 
 - The outputs obtained during each process are aggregated into a [MultiQC](https://github.com/ewels/MultiQC) HTML report. The analysis report presents the results in an interactive manner, including visualizing the three-dimensional protein structure using the [iCn3D](https://github.com/ncbi/icn3d) web viewer. The pipeline is being developed using [Nextflow](https://github.com/nextflow-io/nextflow).
+
+For upcomming updates and ideas see our [Roadmap](https://trello.com/b/IQGUyHVR/afpap-roadmap).
 
 # Installation <a name = "installation"></a>
 ### ***IMPORTANT:** This project is under active development. Momentarily the pipeline can only be utilized by manually installing the desired packages and tools. Support for Docker/Singularity containers represents a high-priority future update.*
@@ -55,7 +57,7 @@ conda config --env --add channels conda-forge
 conda config --env --add channels anaconda
 conda config --env --add channels bioconda
 
-conda install 'numpy>=1.18.5' 'pandas>=1.4.1' 'biopython>=1.76' 'multiqc>=1.12' pymol-open-source=2.5.0
+conda install 'numpy>=1.18.5' 'pandas>=1.4.1' 'biopython>=1.76' 'multiqc>=1.12' pymol-open-source=2.5.0 graphviz
 conda install -c salilab dssp=3.0.0
 ```
 - Install Nextflow and add the executable to PATH: https://github.com/nextflow-io/nextflow
@@ -75,11 +77,15 @@ The following analysis steps are optional and their installation can be skipped 
 
 ### Pfam search:
 - The Pfam database is used to match the protein sequence agains protein families.
-- Download the Pfam database(~1.5GB): 
+- Download the Pfam database(~1.5GB) - Pfam-A.hmm Pfam-A.hmm.dat: 
 http://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/
 - Install the following packages:
 ```
 conda install pfam_scan perl-json
+```
+- Inside the database directory execute:
+```
+hmmpress Pfam-A.hmm
 ```
 - Set path variable inside **nextflow.config**
 ```
